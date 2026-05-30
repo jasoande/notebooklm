@@ -41,11 +41,9 @@
   ansible.builtin.command:
     cmd: >
       podman run --rm -i
-      --entrypoint python3
-      -e PYTHONPATH=/workspace/notebooklm
       -v {{ project_root }}:/workspace:Z
-      -w /
-      {{ container_image_tag }} -m notebooklm_core.main
+      -w /app
+      {{ container_image_tag }} python3 -m notebooklm_core.main
       --storage /workspace/.storage_{{ client_item }}.json
       {{ client_folder_val }} ask --stream -
     stdin: "{{ item.content | b64decode | replace('$name', client_name_val) | replace('$industry', client_industry_val) }}"
