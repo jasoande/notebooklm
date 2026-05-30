@@ -1,0 +1,23 @@
+---
+- name: Orchestrate Parallel NotebookLM Client Ingestion and Asset Generation
+  hosts: localhost
+  connection: local
+  gather_facts: true
+
+  pre_tasks:
+    - name: Dynamically bind execution environment parameters into global runtime memory
+      ansible.builtin.set_fact:
+        ansible_python_interpreter: "/opt/homebrew/bin/python3"
+        project_root: "{{ lookup('env', 'HOME') }}/Venella_2026"
+        container_image_tag: "quay.io/jasoande/notebooklm-core-engine:latest"
+        container_name: "notebooklm_task_worker"
+        clients:
+          - merck_test
+          - organon_test
+
+    - name: Verify local execution footprint context
+      ansible.builtin.debug:
+        msg: "Pipeline initialization active for profiles: {{ clients }}. Using interpreter: {{ ansible_python_interpreter }}"
+
+  roles:
+    - notebooklm
