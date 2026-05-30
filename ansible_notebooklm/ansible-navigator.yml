@@ -1,0 +1,13 @@
+---
+ansible-navigator:
+  execution-environment:
+    container-engine: podman
+    enabled: true
+    # Use a community image that actually contains the Ansible runner engine
+    image: quay.io/ansible/creator-ee:v0.22.0
+    pull:
+      policy: missing
+    volume-mounts:
+      - src: "/home/jasona/notebooklm/ansible_notebooklm"
+        dest: "/workspace"
+        options: "Z"

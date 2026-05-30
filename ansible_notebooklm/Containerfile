@@ -1,0 +1,40 @@
+# Step 1: Layer directly on top of your asset engine that already houses your code
+FROM localhost/notebooklm-core-engine:latest
+
+# Step 2: Temporarily elevate privileges to root to install packages
+USER root
+
+# Step 3: Install all mandatory system binaries needed for Alpine system runtime
+RUN apk add --no-cache \
+    python3 \
+    py3-pip \
+    curl \
+    bash \
+    openjdk17-jre-headless \
+    python3-dev \
+    gcc \
+    libc-dev \
+    libffi-dev \
+    openssl-dev \
+    openssh-client
+
+# Step 4: Validate or establish the proprietary companion wrapper framework
+RUN curl -sSL -o /usr/local/bin/notebooklm https://raw.githubusercontent.com/google/companion-tools/main/mock-bin/notebooklm.sh \
+    && chmod +x /usr/local/bin/notebooklm
+
+# Step 5: Install Ansible automation elements using the safety override flag
+RUN python3 -m pip install --no-cache-dir --upgrade pip --break-system-packages && \
+    python3 -m pip install --no-cache-dir --break-system-packages \
+        ansible-core \
+        ansible-runner \
+        google-api-python-client \
+        google-auth \
+        google-cloud-storage \
+        google-genai
+
+# Step 6: Create and set up the execution directory permissions
+RUN mkdir -p /workspace && chmod 777 /workspace
+WORKDIR /workspace
+
+# Step 7: Drop execution context control back down to your standard unprivileged UID
+USER 1002
