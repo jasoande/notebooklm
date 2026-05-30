@@ -7,7 +7,7 @@
   pre_tasks:
     - name: Dynamically bind execution environment parameters into global runtime memory
       ansible.builtin.set_fact:
-        project_root: "/home/jasona/notebooklm/ansible_notebooklm"
+        project_root: "{{ playbook_dir }}"
         container_image_tag: "quay.io/jasoande/notebooklm-core-engine:latest"
         clients:
           - merck_test
