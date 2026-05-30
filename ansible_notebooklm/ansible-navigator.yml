@@ -3,11 +3,16 @@ ansible-navigator:
   execution-environment:
     container-engine: podman
     enabled: true
-    # Use a community image that actually contains the Ansible runner engine
-    image: quay.io/ansible/creator-ee:v0.22.0
+    image: localhost/notebooklm-core-engine:latest
     pull:
       policy: missing
     volume-mounts:
       - src: "/home/jasona/notebooklm/ansible_notebooklm"
         dest: "/workspace"
         options: "Z"
+      - src: "/home/jasona/notebooklm/Venella_2026"
+        dest: "/home/jasona/notebooklm/Venella_2026"
+        options: "Z"
+      - src: "~/.config/gcloud"
+        dest: "/home/runner/.config/gcloud"
+        options: "Z"  

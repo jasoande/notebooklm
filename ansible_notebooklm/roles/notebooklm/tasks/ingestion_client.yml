@@ -37,15 +37,20 @@
     client_industry_val: "{{ regex_metadata_tokens.stdout.split('|')[1] }}"
     client_folder_val: "{{ regex_metadata_tokens.stdout.split('|')[2] }}"
 
-- name: Process compiled pipeline questions inside core engine container
-  ansible.builtin.command:
-    cmd: >
-      podman run --rm -i
-      -v {{ project_root }}:/workspace:Z
-      -w /app
-      {{ container_image_tag }} python3 -m notebooklm_core.main
-      --storage /workspace/.storage_{{ client_item }}.json
-      {{ client_folder_val }} ask --stream -
-    stdin: "{{ item.content | b64decode | replace('$name', client_name_val) | replace('$industry', client_industry_val) }}"
+- name: Post pipeline questions natively using user browser credential block
+  ansible.builtin.uri:
+    url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+    method: POST
+    status_code: 200
+    body_format: json
+    body:
+      contents:
+        - parts:
+            - text: "{{ item.content | b64decode | replace('$name', client_name_val) | replace('$industry', client_industry_val) }}"
+  register: gemini_response
   loop: "{{ raw_prompt_slurp.results | default([]) }}"
-  changed_when: true
+
+- name: Render pipeline insights
+  ansible.builtin.debug:
+    msg: "{{ item.json.candidates[0].content.parts[0].text }}"
+  loop: "{{ gemini_response.results | default([]) }}"
