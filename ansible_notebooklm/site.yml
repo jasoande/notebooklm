@@ -1,27 +1,16 @@
 ---
-- name: Orchestrate Parallel NotebookLM Client Ingestion and Asset Generation
+- name: Orchestrate NotebookLM Pipeline Data Ingestion
   hosts: localhost
   connection: local
-  gather_facts: true
+  gather_facts: false
 
   pre_tasks:
     - name: Dynamically bind execution environment parameters into global runtime memory
       ansible.builtin.set_fact:
-        ansible_python_interpreter: "/usr/bin/python"
-        project_root: "/home/jasona/Venella_2026"
-        container_image_tag: "localhost/notebooklm-core-engine:latest"
-        container_name: "notebooklm_task_worker"
+        project_root: "/home/jasona/notebooklm/ansible_notebooklm"
+        container_image_tag: "quay.io/jasoande/notebooklm-core-engine:latest"
         clients:
           - merck_test
-          - organon_test
-          - lord_abbett_test
-          - organon_test
-          - blue_yonder_test
-          - hershey_test
-
-    - name: Verify local execution footprint context
-      ansible.builtin.debug:
-        msg: "Pipeline initialization active for profiles: {{ clients }}. Using interpreter: {{ ansible_python_interpreter }}"
 
   roles:
-    - notebooklm
+    - role: notebooklm
