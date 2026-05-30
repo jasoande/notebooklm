@@ -1,0 +1,2 @@
+How might we... ideation & brainstorming 
+Let's brainstorm how Red Hat can make a significant impact on the $name objective for the customer. Generate a list of 15 'How might we...' statements that break the initiative into smaller parts. For example, 'How might we help them personalize customer support?' or 'How might we improve their booking performance?' For each statement, list one concrete action or project and the primary Red Hat technology that would apply.

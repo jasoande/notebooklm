@@ -1,0 +1,39 @@
+---
+- name: Ensure target directory infrastructure exists on the Mac
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - "{{ project_root }}"
+    - "{{ project_root }}/prompts_cache"
+
+# --- UPDATED REGISTRY SYNC BLOCK ---
+- name: Pull execution environment from quay.io registry via Podman
+  ansible.builtin.command:
+    cmd: "podman pull {{ container_image_tag }}"
+  register: registry_pull
+  failed_when: false
+  changed_when: true
+
+#- name: Fallback registry download hook to Docker if Podman is absent
+#  ansible.builtin.command:
+#    cmd: "docker pull {{ container_image_tag }}"
+#  when: registry_pull.rc != 0
+#  changed_when: true
+
+- name: Synchronize embedded prompts from role to localized runtime cache
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/"
+    dest: "{{ project_root }}/prompts_cache/"
+    mode: '0644'
+
+- name: Discover and sort structural prompt target files inside the role cache
+  ansible.builtin.find:
+    paths: "{{ project_root }}/prompts_cache"
+    patterns: "*.pdf"
+  register: found_prompts
+
+- name: Enforce strict prioritization rule execution order
+  ansible.builtin.set_fact:
+    sorted_prompts: "{{ found_prompts.files | sort(attribute='path') }}"

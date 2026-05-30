@@ -1,0 +1,53 @@
+---
+- name: Locate all compiled pipeline text prompts from cache
+  ansible.builtin.find:
+    paths: "{{ project_root }}/prompts_cache"
+    patterns: "*.txt"
+  register: found_prompts
+
+- name: Sort prompts sequentially to maintain analytical context execution flow
+  ansible.builtin.set_fact:
+    sorted_prompts: "{{ found_prompts.files | sort(attribute='path') }}"
+
+- name: Slurp prompt content into active engine runtime memory
+  ansible.builtin.slurp:
+    src: "{{ item.path }}"
+  loop: "{{ sorted_prompts }}"
+  register: raw_prompt_slurp
+
+- name: Initialize isolated metadata cache profiles for {{ client_item }}
+  ansible.builtin.file:
+    path: "{{ project_root }}/.storage_{{ client_item }}.json"
+    state: touch
+    mode: '0644'
+
+- name: Extract profile data tokens ($name, $industry, $folder) directly from vars.py
+  ansible.builtin.shell:
+    cmd: |
+      NAME=$(grep -E "^{{ client_item }}_name\s*=" {{ project_root }}/vars.py | awk -F'\"' '{print $2}')
+      IND=$(grep -E "^{{ client_item }}_industry\s*=" {{ project_root }}/vars.py | awk -F'\"' '{print $2}')
+      FOLD=$(grep -E "^{{ client_item }}_folder\s*=" {{ project_root }}/vars.py | awk -F'\"' '{print $2}')
+      echo "$NAME|$IND|$FOLD"
+  register: regex_metadata_tokens
+  changed_when: false
+
+- name: Map profile metadata tokens into pipeline storage fields
+  ansible.builtin.set_fact:
+    client_name_val: "{{ regex_metadata_tokens.stdout.split('|')[0] }}"
+    client_industry_val: "{{ regex_metadata_tokens.stdout.split('|')[1] }}"
+    client_folder_val: "{{ regex_metadata_tokens.stdout.split('|')[2] }}"
+
+- name: Process compiled pipeline questions inside core engine container
+  ansible.builtin.command:
+    cmd: >
+      podman run --rm -i
+      --entrypoint python3
+      -e PYTHONPATH=/workspace/notebooklm
+      -v {{ project_root }}:/workspace:Z
+      -w /
+      {{ container_image_tag }} -m notebooklm_core.main
+      --storage /workspace/.storage_{{ client_item }}.json
+      {{ client_folder_val }} ask --stream -
+    stdin: "{{ item.content | b64decode | replace('$name', client_name_val) | replace('$industry', client_industry_val) }}"
+  loop: "{{ raw_prompt_slurp.results | default([]) }}"
+  changed_when: true

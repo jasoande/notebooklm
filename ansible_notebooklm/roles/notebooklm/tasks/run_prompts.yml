@@ -1,0 +1,51 @@
+---
+- name: Create isolated output directory layers for client profile
+  ansible.builtin.file:
+    path: "{{ project_root }}/{{ client_item }}"
+    state: directory
+    mode: '0755'
+
+- name: Load raw prompt text context strings from role storage
+  ansible.builtin.slurp:
+    src: "{{ item.path }}"
+  register: raw_prompt_slurp
+  loop: "{{ sorted_prompts }}"
+
+- name: Process compiled pipeline questions inside container engine shell
+  ansible.builtin.command:
+    # FORCE ARM64: Tells Podman to run this natively on your Apple Silicon Mac chip
+    cmd: >
+      podman run --rm -i
+      --platform linux/arm64
+      -v {{ project_root }}:/workspace:z
+      -e PYTHONPATH=/app
+      {{ container_image_tag }}
+      python3 -m notebooklm_core.main --storage /workspace/.storage_{{ client_item }}.json {{ client_item }} ask --stream -
+    stdin: "{{ item.content | b64decode | replace('$name', client_name_val) | replace('$industry', client_industry_val) }}"
+  loop: "{{ raw_prompt_slurp.results }}"
+  register: pipeline_ask_results
+  changed_when: true
+
+- name: Generate studio analytical components and clean intermediate caches
+  ansible.builtin.command:
+    cmd: >
+      podman run --rm
+      --platform linux/arm64
+      -v {{ project_root }}:/workspace:z
+      -e PYTHONPATH=/app
+      {{ container_image_tag }}
+      python3 -m notebooklm_core.main --storage /workspace/.storage_{{ client_item }}.json {{ client_item }} generate {{ asset_item }}
+  loop:
+    - "mind-map"
+    - "data-table"
+    - "slide-deck"
+  loop_control:
+    loop_var: asset_item
+  changed_when: true
+  failed_when: false
+
+- name: Tear down temporal context metadata cache files from host file engine
+  ansible.builtin.file:
+    path: "{{ project_root }}/.storage_{{ client_item }}.json"
+    state: absent
+  failed_when: false

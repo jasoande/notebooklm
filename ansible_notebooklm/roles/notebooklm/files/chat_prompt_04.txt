@@ -1,0 +1,9 @@
+Based on what you know about $name and about the industry  in general, how would you rate the approach to innovation by $name on this scale: Evaluate which of the following best describes the customer's approach to adopting innovation, with a special focus on digital, IT, or AI-supported innovation. Please note that this description should reflect the customer's approach independently of their current status with Red Hat:
+1. Laggard: Characterized by a traditional and conservative approach; these companies are the last to adopt new technologies.
+2. Late Majority: Characterized by skepticism towards change, adopting innovations only after they have been widely accepted and implemented within the industry or market.
+3. Early Majority: Characterized by adopting new innovations ahead of the average company, though they require evidence of the innovation's effectiveness before doing so.
+4. Early Adopter: Characterized by a comfort with change and a willingness to adopt new ideas and technologies.
+5. Innovator: Characterized by a desire to be the first to implement innovations; these companies are digital leaders.
+
+Please provide a brief comment (not more than 4 sentences) explaining why you chose a particular answer. Mind you are still acting as Senior Account Executive.
+

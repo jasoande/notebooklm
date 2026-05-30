@@ -1,0 +1,45 @@
+Act as a senior industry analyst preparing a detailed, long-form research report for account teams at Red Hat to better serve clients in the global $industry industry.
+Your task is to analyze how digital and information technologies are shaping this industry  over the next 5 years, focusing on the following confirmed subsegments:
+---
+### 🔍 MANDATORY INSTRUCTIONS FOR OUTPUT
+- Ensure **geographic balance**: Give equal research depth to **North America, Europe, Asia-Pacific**, and include references to **Middle East, Africa, and Latin America** where relevant.
+- In each section, cite **regional case studies or company examples** across at least **3 global markets**.
+- Use **international sources first** (e.g., OECD, IMF, WTO, UNCTAD, World Bank, McKinsey, BCG, Statista, regional trade orgs, country regulators).
+- If data is missing, say so explicitly — do not speculate or fabricate.
+- Avoid US-centric assumptions. Where technology adoption or regulatory drivers differ by region, explain why.
+
+---
+### 🔷 Report Sections (Use This Structure)
+
+**1. Industry Structure Analysis**  
+Analyze the global market concentration of the industry, dominant business models, and competitive pressures across regions. Provide 2023–2030 revenue/GDP share estimates by region and channel (brick-and-mortar vs. e-commerce).
+**2. Value Chain Mapping & Technology Enablement**  
+Map the full value chain from product development to customer service. For each phase:
+- Describe how IT is being applied across geographies.
+- Explain regional differences in use cases, adoption drivers, and regulatory constraints.
+- Provide examples from companies in different continents.
+**3. Emerging Technology Deep-Dive**  
+Examine how technologies like AI, IoT, cloud-native platforms, robotics, AR/VR, and digital twins are reshaping the industry. For each:
+- Analyze use case variation across subsegments and regions.
+- Contrast implementation strategies of Western vs. Asian firms (e.g., Amazon vs. JD.com or Shein).
+**4. Subsegment & Regional Variation**  
+Highlight how digitization differs across subsegments **and** regions:
+- What problems does each subsegment face in different markets?
+- Include macro (e.g., GDP per capita, mobile penetration) and micro factors (e.g., retail maturity, logistics infrastructure).
+**5. IT Vendor Ecosystem**  
+List and describe the global IT vendor landscape:
+- Include vendors from multiple regions (e.g., not only AWS, but also Alibaba Cloud, SAP, regional ERP/CDP vendors).
+- Comment on open source usage, Red Hat's role, and trends in regional partnerships.
+- Identify consolidation trends and market gaps by geography.
+**6. Strategic Outlook & Executive Recommendations**  
+Provide region-specific recommendations to retail executives on:
+- What technologies to prioritize based on subsegment and geography.
+ Regional risks and regulatory constraints to account for.
+- Strategic moves needed to close the gap with digital-native competitors.
+
+---
+**Formatting Guidelines**:
+- Use long-form, deeply analytical prose. No bullet points.
+- Cite organizations, data providers, or companies by name. Prefer international and region-specific sources over generic ones.
+- Maintain a strategic, executive-ready tone.
+
