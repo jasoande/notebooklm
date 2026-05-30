@@ -7,6 +7,7 @@ ansible-navigator:
     pull:
       policy: missing
     volume-mounts:
+<<<<<<< HEAD
       - src: "/home/jasona/notebooklm/ansible_notebooklm"
         dest: "/workspace"
         options: "Z"
@@ -16,3 +17,17 @@ ansible-navigator:
       - src: "~/.config/gcloud"
         dest: "/home/runner/.config/gcloud"
         options: "Z"  
+=======
+      # 1. Natively binds whatever folder you are currently standing in
+      - src: "."
+        dest: "/workspace"
+        options: "Z"
+      # 2. FIXED: Portable mapping that adapts instantly to Mac or Linux directory trees
+      - src: "$HOME/account_plan/notebooklm/Venella_2026"
+        dest: "/home/jasona/notebooklm/Venella_2026"
+        options: "Z"
+      # 3. Securely mounts the local browser identity token cache
+      - src: "$HOME/.config/gcloud"
+        dest: "/home/runner/.config/gcloud"
+        options: "Z"
+>>>>>>> 9252c41 (updated ingestion_client)
