@@ -41,6 +41,7 @@ Filename Sanitization (san.sh): Run this shell script to scrub your directories.
 Bash
 chmod +x san.sh
 ./san.sh /AbsolutePath/To/Smith_2026/
+
 3. Configuration Parameter Layout (vars.py)
 The multi-threaded background handlers rely on a single control properties layout named vars.py sitting in the root project folder. This schema maps arbitrary profile indexes cleanly to localized system folders. It strips out legacy remote cloud identifiers and contains no hardcoded customer names:
 
@@ -77,7 +78,9 @@ Customer5_folder = "/AbsolutePath/To/Smith_2026/Customer5_Sanitized_PDF/"
 Customer6_name = "Generic Customer Six Holdings"
 Customer6_industry = "Telecommunications and Aerospace Analytics"
 Customer6_folder = "/AbsolutePath/To/Smith_2026/Customer6_Sanitized_PDF/"
+
 4. Cross-Platform Environment Setup
+
 4.1 Debian / Ubuntu Linux Environment Setup
 Execute the following terminal commands to fulfill system headers, spin up virtual isolation layers, and compile packages:
 
@@ -106,6 +109,7 @@ python -m venv .venv
 .\\.venv\\Scripts\\Activate.ps1
 python -m pip install --upgrade pip
 pip install google-api-python-client google-auth-oauthlib pandas openpyxl
+
 5. Pipeline Execution Sequence
 Before triggering operations, ensure a persistent cloud security handshake token is active by running notebooklm login in your terminal environment to secure authorization hooks. Once authorized, invoke your preferred engine version directly from your terminal shell:
 
