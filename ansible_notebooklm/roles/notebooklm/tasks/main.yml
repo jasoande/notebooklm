@@ -1,9 +1,0 @@
----
-- name: Include Pre-Flight configuration parameters
-  ansible.builtin.include_tasks: "{{ role_path }}/tasks/pre-flight.yml"
-
-- name: Phase 1 - Sequential Client Ingestion Loop
-  ansible.builtin.include_tasks: "{{ role_path }}/tasks/ingestion_client.yml"
-  loop: "{{ clients }}"
-  loop_control:
-    loop_var: client_item
