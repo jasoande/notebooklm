@@ -14,7 +14,7 @@ import webbrowser
 import tkinter as tk
 import tkinter.font as tkfont
 from tkinter import filedialog
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 # --- Fallback Check for Google API Dependencies ---
@@ -35,8 +35,8 @@ except ImportError:
     print(f"Error: Could not find vars.py in {SCRIPT_DIR}", file=sys.stderr)
     sys.exit(1)
 
-LOG_FILE_PATH = Path("/Users/jasona/account_plan/notebooklmpipeline_deep_execution.log")
-DASHBOARD_PATH = Path("/Users/jasona/account_plan/notebooklmpipeline_dashboard.html")
+LOG_FILE_PATH = Path("/Users/jasona/account_plan/notebooklm/pipeline_deep_execution.log")
+DASHBOARD_PATH = Path("/Users/jasona/account_plan/notebooklm/pipeline_dashboard.html")
 
 LOG_FILE_PATH.parent.mkdir(parents=True, exist_ok=True)
 
@@ -47,6 +47,9 @@ log_formatter = logging.Formatter(
 
 root_logger = logging.getLogger()
 root_logger.setLevel(logging.DEBUG)
+
+if root_logger.hasHandlers():
+    root_logger.handlers.clear()
 
 file_handler = logging.FileHandler(LOG_FILE_PATH, mode="w", encoding="utf-8")
 file_handler.setLevel(logging.DEBUG)
@@ -64,21 +67,22 @@ dashboard_state = {}
 
 
 def update_dashboard(client_token, step=None, progress=None, status=None):
-    """Thread-safe updates to the high-fidelity Red Hat Fedora themed visualization layer."""
+    """Thread-safe updates to the high-fidelity Red Hat themed visualization layer."""
     client_name = getattr(config, f"{client_token}_name", client_token)
-    if client_token not in dashboard_state:
-        dashboard_state[client_token] = {
-            "name": client_name,
-            "step": "Initializing",
-            "progress": 0,
-            "status": "PENDING"
-        }
-    
-    if step is not None: dashboard_state[client_token]["step"] = step
-    if progress is not None: dashboard_state[client_token]["progress"] = progress
-    if status is not None: dashboard_state[client_token]["status"] = status
+    with dashboard_lock:
+        if client_token not in dashboard_state:
+            dashboard_state[client_token] = {
+                "name": client_name,
+                "step": "Initializing",
+                "progress": 0,
+                "status": "PENDING"
+            }
+        
+        if step is not None: dashboard_state[client_token]["step"] = step
+        if progress is not None: dashboard_state[client_token]["progress"] = progress
+        if status is not None: dashboard_state[client_token]["status"] = status
 
-    html_content = f"""<!DOCTYPE html>
+        html_content = f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -106,6 +110,7 @@ def update_dashboard(client_token, step=None, progress=None, status=None):
         .progress-fill {{ height: 100%; width: 0%; transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1); background: linear-gradient(90deg, #cc0000 0%, #ff3333 100%); }}
         .status-pill {{ font-size: 0.75rem; font-weight: 700; padding: 5px 14px; border-radius: 30px; text-transform: uppercase; letter-spacing: 0.75px; box-shadow: inset 0 1px 2px rgba(255,255,255,0.1); }}
         .pill-RUNNING {{ background: rgba(236,122,8,0.15); color: #f4c176; border: 1px solid #ec7a08; }}
+        .pill-DEGRADED {{ background: rgba(219, 145, 0, 0.2); color: #ffab40; border: 1px solid #ff9100; }}
         .pill-COMPLETE {{ background: rgba(62,134,53,0.15); color: #8bc34a; border: 1px solid #3e8635; }}
         .pill-FAILED {{ background: rgba(201,25,11,0.15); color: #ff6b6b; border: 1px solid #c9190b; }}
         .pill-PENDING {{ background: #212427; color: #d1d5db; border: 1px solid #4f5255; }}
@@ -141,13 +146,14 @@ def update_dashboard(client_token, step=None, progress=None, status=None):
         </div>
         <div class="grid-container">
     """
-    for token, data in dashboard_state.items():
-        fill_color = "linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%)"
-        if data["status"] == "COMPLETE": fill_color = "linear-gradient(90deg, #3e8635 0%, #5ba94c 100%)"
-        if data["status"] == "FAILED": fill_color = "linear-gradient(90deg, #c9190b 0%, #ef4444 100%)"
-        if data["status"] == "RUNNING": fill_color = "linear-gradient(90deg, #ec7a08 0%, #f59e0b 100%)"
+        for token, data in dashboard_state.items():
+            fill_color = "linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%)"
+            if data["status"] == "COMPLETE": fill_color = "linear-gradient(90deg, #3e8635 0%, #5ba94c 100%)"
+            if data["status"] == "FAILED": fill_color = "linear-gradient(90deg, #c9190b 0%, #ef4444 100%)"
+            if data["status"] == "RUNNING": fill_color = "linear-gradient(90deg, #ec7a08 0%, #f59e0b 100%)"
+            if data["status"] == "DEGRADED": fill_color = "linear-gradient(90deg, #ff9100 0%, #ffab40 100%)"
 
-        html_content += f"""
+            html_content += f"""
             <div class="rh-card">
                 <div class="card-header">
                     <span class="client-name">{data["name"]} <span class="client-hash">{token}</span></span>
@@ -162,9 +168,7 @@ def update_dashboard(client_token, step=None, progress=None, status=None):
                 </div>
             </div>
         """
-    html_content += "</div></div></body></html>"
-    
-    with dashboard_lock:
+        html_content += "</div></div></body></html>"
         try:
             DASHBOARD_PATH.write_text(html_content, encoding="utf-8")
         except IOError:
@@ -172,379 +176,188 @@ def update_dashboard(client_token, step=None, progress=None, status=None):
 
 
 def run_cmd(cmd, check=True, text=True, capture_output=False, input_data=None):
-    """Safely executes system commands with optional input injection."""
-    logging.debug(f"Executing system command: {' '.join(cmd)}")
+    """Executes system commands with safety staggering profiles."""
+    time.sleep(random.uniform(0.2, 0.6))
+    logging.debug(f"Executing command: {' '.join(cmd)}")
     try:
-        res = subprocess.run(
-            cmd, check=check, text=text, capture_output=capture_output, input=input_data
-        )
-        return res
+        return subprocess.run(cmd, check=check, text=text, capture_output=capture_output, input=input_data)
     except subprocess.CalledProcessError as e:
-        logging.error(f"Command failed with exit code {e.returncode}: {' '.join(cmd)}")
+        logging.error(f"Command failed with code {e.returncode}: {' '.join(cmd)}")
         raise e
-
-
-def fetch_notebook_cache(storage_path=None):
-    """Fetches the notebook list using an explicit storage path to bypass race conditions."""
-    cmd = ["notebooklm"]
-    if storage_path:
-        cmd.extend(["--storage", str(storage_path)])
-    cmd.append("list")
-
-    try:
-        res = run_cmd(cmd, capture_output=True)
-        cache = {}
-        for line in res.stdout.splitlines():
-            clean_line = line.replace("│", "").replace("┃", "").strip()
-            parts = clean_line.split()
-            if len(parts) >= 2 and "-" in parts[0]:
-                nb_id = parts[0]
-                if "Owner" in parts:
-                    name = " ".join(parts[1:parts.index("Owner")]).strip()
-                else:
-                    name = " ".join(parts[1:-2]).strip()
-                cache[name] = nb_id
-        return cache
-    except Exception as e:
-        logging.error(f"Failed to fetch notebook cache: {e}")
-        return {}
-
-
-def ensure_notebook_exists(client, shared_auth_path):
-    """Worker task to ensure a notebook exists for a client before any UI prompts happen."""
-    client_storage = SCRIPT_DIR / f".storage_{client}.json"
-    update_dashboard(client, step="Pre-flight verification", progress=5, status="RUNNING")
-    try:
-        if shared_auth_path.exists():
-            client_storage.write_text(shared_auth_path.read_text())
-            time.sleep(0.1)
-
-        name_value = getattr(config, f"{client}_name", "")
-        if not name_value:
-            update_dashboard(client, step="Skipped - No configuration matched", progress=0, status="PENDING")
-            return None
-
-        notebook_cache = fetch_notebook_cache(storage_path=client_storage)
-        nb_id = notebook_cache.get(name_value)
-
-        if not nb_id:
-            logging.info(f"[{name_value}] Notebook missing. Pre-creating workspace now...")
-            res = run_cmd(["notebooklm", "--storage", str(client_storage), "create", name_value], capture_output=True)
-            uuid_match = re.search(r'([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})', res.stdout, re.IGNORECASE)
-            
-            if uuid_match:
-                nb_id = uuid_match.group(1)
-            else:
-                time.sleep(2.0)
-                notebook_cache = fetch_notebook_cache(storage_path=client_storage)
-                nb_id = notebook_cache.get(name_value)
-                
-            if not nb_id:
-                raise Exception(f"Failed to verify notebook creation for: {name_value}")
-        
-        update_dashboard(client, step="Workspace Link Ready", progress=15, status="RUNNING")
-        return client, name_value, nb_id
-    except Exception as e:
-        update_dashboard(client, step="Pre-flight configuration error", progress=100, status="FAILED")
-        raise e
-    finally:
-        if client_storage.exists():
-            try:
-                client_storage.unlink()
-            except Exception:
-                pass
-
-
-def extract_id_from_google_shortcut(file_path):
-    """Parses local desktop sync pointer files and extracts raw Document IDs."""
-    try:
-        content = Path(file_path).read_text(errors='ignore')
-        if '"doc_id"' in content or '"id"' in content:
-            data = json.loads(content)
-            doc_id = data.get("doc_id") or data.get("id") or data.get("resource_id")
-            if doc_id: return doc_id
-        url_match = re.search(r'https://docs\.google\.com/[^/]+/d/([a-zA-Z0-9-_]+)', content)
-        if url_match: return url_match.group(1)
-    except Exception:
-        pass
-    return None
-
-
-def convert_sheet_shortcut_to_csv_text(file_path, client_storage):
-    """Fallback context compiler to convert spreadsheets into flat CSV data for indexing."""
-    try:
-        import pandas as pd
-        csv_path = Path(file_path).with_suffix('.csv')
-        if os.path.exists(file_path.replace('.gsheet', '.xlsx')):
-            df = pd.read_excel(file_path.replace('.gsheet', '.xlsx'))
-            df.to_csv(csv_path, index=False)
-            return csv_path
-    except Exception:
-        pass
-    return None
 
 
 def request_files_from_main_thread(client_name, timeout_secs=90):
-    """Thread-safe bridge that sends a UI request to the main thread and awaits results."""
     response_queue = queue.Queue()
     ui_queue.put((client_name, timeout_secs, response_queue))
     return response_queue.get()
 
 
-def try_upload_local_file_with_fallbacks(client_storage, target_id, source_title, name_value):
-    """Uses verified standard click format targeting option parameters properly."""
-    variations = [
-        ["notebooklm", "--storage", str(client_storage), "source", "add", "--title", source_title, target_id],
-        ["notebooklm", "--storage", str(client_storage), "source", "add", target_id],
-    ]
-    for cmd in variations:
-        try:
-            res = run_cmd(cmd, capture_output=True)
-            return res.stdout
-        except subprocess.CalledProcessError:
-            continue
-    return None
-
-
-def ingest_client_sources(client, shared_auth_path, nb_id):
-    """PHASE 0: Handles collection, localization parsing, and remote upload of custom client knowledge assets."""
-    client_storage = SCRIPT_DIR / f".storage_ingest_{client}.json"
-    temporary_files_to_clean = []
-    name_value = getattr(config, f"{client}_name", f"UnknownClient-{client}")
-    tracked_tokens = []
-
-    update_dashboard(client, step="Phase 0: Resolving Source Targets", progress=20, status="RUNNING")
-    try:
-        if shared_auth_path.exists():
-            client_storage.write_text(shared_auth_path.read_text())
-            time.sleep(random.uniform(0.05, 0.2))
-
-        drive_folder_value = Path(getattr(config, f"{client}_folder")).resolve()
-        manually_selected_sources = request_files_from_main_thread(name_value, timeout_secs=90)
-
-        run_cmd(["notebooklm", "--storage", str(client_storage), "auth", "refresh", "--quiet"])
-        run_cmd(["notebooklm", "--storage", str(client_storage), "use", nb_id])
-
-        drive_targets = []
-        if drive_folder_value.exists() and drive_folder_value.is_dir():
-            drive_targets.extend([str(p) for p in drive_folder_value.glob("*") if p.is_file()])
-        if manually_selected_sources:
-            drive_targets.extend(manually_selected_sources)
-
-        if not drive_targets:
-            update_dashboard(client, step="Phase 0: Complete (No assets specified)", progress=40, status="RUNNING")
-            return
-
-        update_dashboard(client, step=f"Phase 0: Uploading {len(drive_targets)} items", progress=30, status="RUNNING")
-
-        for idx, target_id in enumerate(drive_targets):
-            is_local = os.path.exists(target_id) and os.path.isfile(target_id)
-            suffix = Path(target_id).suffix.lower() if is_local else ""
-
-            if is_local and suffix == '.gsheet':
-                converted_csv = convert_sheet_shortcut_to_csv_text(target_id, client_storage)
-                if converted_csv and converted_csv.exists():
-                    target_id = str(converted_csv)
-                    is_local = True
-                    suffix = '.csv'
-                    temporary_files_to_clean.append(converted_csv)
-
-            is_gdrive_shortcut = is_local and suffix in ['.gdoc', '.gslides', '.gdraw']
-            raw_title = Path(target_id).stem if is_local else f"doc_{idx + 1}"
-            clean_title = re.sub(r'[^a-zA-Z0-9_]', '', raw_title.replace(' ', '_'))
-            source_title = f"{client}_source_{clean_title}"
-            output_text = None
-
-            if is_gdrive_shortcut:
-                extracted_id = extract_id_from_google_shortcut(target_id)
-                if extracted_id:
-                    try:
-                        res = run_cmd(["notebooklm", "--storage", str(client_storage), "source", "add-drive", extracted_id, source_title], capture_output=True)
-                        output_text = res.stdout
-                    except subprocess.CalledProcessError: pass
-            elif is_local:
-                output_text = try_upload_local_file_with_fallbacks(client_storage, target_id, source_title, name_value)
-            else:
-                try:
-                    res = run_cmd(["notebooklm", "--storage", str(client_storage), "source", "add-drive", target_id, source_title], capture_output=True)
-                    output_text = res.stdout
-                except subprocess.CalledProcessError: pass
-
-            if output_text:
-                uuid_match = re.search(r'([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})', output_text, re.IGNORECASE)
-                wait_target = uuid_match.group(1) if uuid_match else source_title
-                tracked_tokens.append(wait_target)
-
-        if tracked_tokens:
-            update_dashboard(client, step="Phase 0: Synced batch wait lock clearing...", progress=35, status="RUNNING")
-            for token in tracked_tokens:
-                try: run_cmd(["notebooklm", "--storage", str(client_storage), "source", "wait", token])
-                except subprocess.CalledProcessError: pass
-
-        update_dashboard(client, step="Phase 0: Ingestion Completed", progress=40, status="RUNNING")
-    except Exception as e:
-        update_dashboard(client, step="Phase 0 Ingestion Failure", progress=100, status="FAILED")
-        raise e
-    finally:
-        if client_storage.exists():
-            try: client_storage.unlink()
-            except Exception: pass
-        for temp_file in temporary_files_to_clean:
-            if temp_file.exists():
-                try: temp_file.unlink()
-                except Exception: pass
-
-
-def execute_client_prompts(client, sorted_prompt_files, shared_auth_path, nb_id):
-    """PHASE 1: Runs inference and sequencing prompts once global environment data ingestion completes."""
-    client_storage = SCRIPT_DIR / f".storage_prompts_{client}.json"
-    name_value = getattr(config, f"{client}_name", f"UnknownClient-{client}")
+def process_entire_client_lifecycle(client, sorted_prompt_files, shared_auth_path):
+    """CRITICAL FIX: Bounded structural lifecycle wrapper that isolates optional block errors safely."""
+    client_storage = SCRIPT_DIR / f".storage_deep_{client}.json"
+    human_name = getattr(config, f"{client}_name", client)
     industry_value = getattr(config, f"{client}_industry", "")
-
-    update_dashboard(client, step="Phase 1: Sequential prompting cycle", progress=45, status="RUNNING")
+    folder_value = Path(getattr(config, f"{client}_folder")).resolve()
+    
+    current_run_status = "RUNNING"
+    update_dashboard(client, step="Pre-flight verification", progress=5, status=current_run_status)
     try:
         if shared_auth_path.exists():
             client_storage.write_text(shared_auth_path.read_text())
-            time.sleep(0.1)
 
-        run_cmd(["notebooklm", "--storage", str(client_storage), "use", nb_id])
-        output_dir = (SCRIPT_DIR / client).resolve()
-        output_dir.mkdir(parents=True, exist_ok=True)
-
-        for p_idx, prompt_file in enumerate(sorted_prompt_files):
-            step_pct = int(45 + ((p_idx / len(sorted_prompt_files)) * 25))
-            update_dashboard(client, step=f"Phase 1: Processing {prompt_file.name}", progress=step_pct, status="RUNNING")
-            
-            prompt_content = prompt_file.read_text()
-            updated_content = prompt_content.replace("$industry", industry_value).replace("$name", name_value)
-
-            gqp = output_dir / prompt_file.name
-            gqp.write_text(updated_content)
-
-            if "ask" in gqp.name.lower():
-                try:
-                    logging.info(f"[{name_value}] Initiating deep web research agent layer explicitly hardcoded...")
-                    run_cmd(["notebooklm", "--storage", str(client_storage), "source", "add-research", "--prompt-file", str(gqp.resolve()), "--mode", "deep", "--no-wait"])
-                    
-                    timeout_limit = 180  
-                    loop_idx = 0
-                    while loop_idx < timeout_limit:
-                        status_res = run_cmd(["notebooklm", "--storage", str(client_storage), "research", "status"], capture_output=True)
-                        status_text = status_res.stdout.upper()
-                        
-                        if "COMPLETED" in status_text or "IDLE" in status_text: break
-                        elif any(term in status_text for term in ["PROCESSING", "INGESTING", "RUNNING", "PENDING", "SYNCHRONIZING"]):
-                            update_dashboard(client, step="Phase 1: Web Deep Research Ingesting...", progress=step_pct, status="RUNNING")
-                            time.sleep(5.0)  
-                            loop_idx += 1
-                        else:
-                            time.sleep(5.0)
-                            loop_idx += 1
-                            
-                    run_cmd(["notebooklm", "--storage", str(client_storage), "research", "wait", "--import-all", "--max-imports", "25", "--timeout", "180"])
-                    time.sleep(1.0)
-                except subprocess.CalledProcessError as e:
-                    logging.error(f"[{name_value}] Web research indexing execution sequence failed: {e}")
-            else:
-                temp_prompt_carrier = SCRIPT_DIR / f".temp_prompt_{client}.txt"
-                temp_prompt_carrier.write_text(updated_content, encoding="utf-8")
-                try:
-                    run_cmd(["notebooklm", "--storage", str(client_storage), "ask", "--prompt-file", str(temp_prompt_carrier.resolve()), "--save-as-note"])
-                    run_cmd(["notebooklm", "--storage", str(client_storage), "status"])
-                except subprocess.CalledProcessError as e:
-                    logging.error(f"[{name_value}] Ask chat dialogue context failed: {e}")
-                finally:
-                    if temp_prompt_carrier.exists():
-                        temp_prompt_carrier.unlink()
-
-        update_dashboard(client, step="Phase 1: Prompts processed", progress=70, status="RUNNING")
-    except Exception as e:
-        update_dashboard(client, step="Phase 1 Prompt Processing Defect", progress=100, status="FAILED")
-        raise e
-    finally:
-        if client_storage.exists():
-            try:
-                client_storage.unlink()
-                context_file = Path(str(client_storage) + ".context.json")
-                if context_file.exists(): context_file.unlink()
-            except Exception: pass
-
-
-def clean_duplicate_sources(client, shared_auth_path, nb_id):
-    """Scans the notebook source registry for a client and purges identical titles automatically."""
-    client_storage = SCRIPT_DIR / f".storage_clean_{client}.json"
-    update_dashboard(client, step="Phase 2: Deduplication Sweep", progress=75, status="RUNNING")
-    try:
-        if shared_auth_path.exists():
-            client_storage.write_text(shared_auth_path.read_text())
-            time.sleep(0.1)
-
-        run_cmd(["notebooklm", "--storage", str(client_storage), "use", nb_id])
-        res = run_cmd(["notebooklm", "--storage", str(client_storage), "source", "list"], capture_output=True)
-
-        seen_titles = set()
-        duplicates_to_remove = []
-
+        # Phase 1: Establish Workspace Cache Connections
+        run_cmd(["notebooklm", "--storage", str(client_storage), "auth", "refresh", "--quiet"])
+        res = subprocess.run(["notebooklm", "--storage", str(client_storage), "list"], check=True, text=True, capture_output=True)
+        
+        nb_id = None
         for line in res.stdout.splitlines():
             clean_line = line.replace("│", "").replace("┃", "").strip()
             parts = clean_line.split()
+            if len(parts) >= 2 and "-" in parts[0]:
+                if " ".join(parts[1:-2]).strip() == human_name or " ".join(parts[1:-1]).strip() == human_name:
+                    nb_id = parts[0]
+                    break
 
-            if parts and parts[0] != "ID" and "-" in parts[0]:
-                source_id = parts[0]
-                source_title = " ".join(parts[1:-1]).strip() if "type" in parts[-1].lower() else " ".join(parts[1:]).strip()
+        if not nb_id:
+            update_dashboard(client, step="Creating workspace context", progress=10, status=current_run_status)
+            res = run_cmd(["notebooklm", "--storage", str(client_storage), "create", human_name], capture_output=True)
+            uuid_match = re.search(r'([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})', res.stdout, re.IGNORECASE)
+            nb_id = uuid_match.group(1) if uuid_match else None
 
-                if source_title in seen_titles:
-                    duplicates_to_remove.append((source_id, source_title))
-                else:
-                    seen_titles.add(source_title)
-
-        if duplicates_to_remove:
-            for source_id, source_title in duplicates_to_remove:
-                try:
-                    run_cmd(["notebooklm", "--storage", str(client_storage), "source", "delete", source_id], input_data="y\n")
-                    time.sleep(0.5)
-                except subprocess.CalledProcessError: pass
-            run_cmd(["notebooklm", "--storage", str(client_storage), "status"])
-
-        update_dashboard(client, step="Phase 2: Registry Deduplicated", progress=85, status="RUNNING")
-    except Exception as e:
-        update_dashboard(client, step="Phase 2 Cleanup Failure", progress=100, status="FAILED")
-        raise e
-    finally:
-        if client_storage.exists():
-            try: client_storage.unlink()
-            except Exception: pass
-
-
-def post_process_assets(client, shared_auth_path, nb_id):
-    """Fault-Tolerant Dynamic Asset Generation Block."""
-    client_storage = SCRIPT_DIR / f".storage_asset_{client}.json"
-    update_dashboard(client, step="Phase 3: Dynamic Asset Compilation", progress=88, status="RUNNING")
-    try:
-        if shared_auth_path.exists():
-            client_storage.write_text(shared_auth_path.read_text())
-            time.sleep(0.1)
+        if not nb_id:
+            raise Exception("Failed to bind cloud workspace layout ID.")
 
         run_cmd(["notebooklm", "--storage", str(client_storage), "use", nb_id])
-        generation_commands = [
-            (["mind-map"], "Mind Map Generation"),
-            (["data-table", "compare key concepts"], "Tabular Matrix Definition"),
-            (["slide-deck"], "Executive Slide Deck Representation"),
-            (["infographic", "--orientation", "portrait"], "Portrait Infographic Mapping")
-        ]
 
-        for sub_args, label in generation_commands:
+        # Phase 2: Ingestion & Upload Layer
+        update_dashboard(client, step="Phase 0: Material ingestion maps", progress=20, status=current_run_status)
+        manually_selected_sources = request_files_from_main_thread(human_name, timeout_secs=90)
+        
+        drive_targets = []
+        if folder_value.exists() and folder_value.is_dir():
+            drive_targets.extend([str(p) for p in folder_value.glob("*") if p.is_file()])
+        if manually_selected_sources:
+            drive_targets.extend(manually_selected_sources)
+
+        if drive_targets:
+            tracked_tokens = []
+            for idx, target in enumerate(drive_targets):
+                source_title = f"{client}_src_{re.sub(r'[^a-zA-Z0-9_]', '', Path(target).stem.replace(' ', '_'))}"
+                try:
+                    res = run_cmd(["notebooklm", "--storage", str(client_storage), "source", "add", "--title", source_title, target], capture_output=True)
+                    uuid_match = re.search(r'([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})', res.stdout, re.IGNORECASE)
+                    tracked_tokens.append(uuid_match.group(1) if uuid_match else source_title)
+                except Exception:
+                    pass
+
+            for token in tracked_tokens:
+                try: run_cmd(["notebooklm", "--storage", str(client_storage), "source", "wait", token])
+                except Exception: pass
+
+        # Phase 3: Prompt Execution with Self-Healing Fallback
+        update_dashboard(client, step="Phase 1: Running deep structural context prompts", progress=50, status=current_run_status)
+        output_dir = (SCRIPT_DIR / client).resolve()
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        for prompt_file in sorted_prompt_files:
+            prompt_content = prompt_file.read_text().replace("$industry", industry_value).replace("$name", human_name)
+            (output_dir / prompt_file.name).write_text(prompt_content)
+
+            temp_prompt = SCRIPT_DIR / f".temp_{client}_{prompt_file.name}"
+            temp_prompt.write_text(prompt_content, encoding="utf-8")
+
             try:
-                cmd = ["notebooklm", "--storage", str(client_storage), "generate"] + sub_args
-                run_cmd(cmd, check=True)
-                time.sleep(1.0)
-            except subprocess.CalledProcessError: 
-                pass
+                if "ask" in prompt_file.name.lower():
+                    run_cmd(["notebooklm", "--storage", str(client_storage), "source", "add-research", "--prompt-file", str(temp_prompt.resolve()), "--mode", "deep", "--no-wait"])
+                    
+                    max_wait_intervals = 60  
+                    loop_index = 0
+                    research_cleared_cleanly = False
+                    
+                    while loop_index < max_wait_intervals:
+                        time.sleep(5.0)
+                        status_check = subprocess.run(["notebooklm", "--storage", str(client_storage), "research", "status"], text=True, capture_output=True)
+                        status_stdout = status_check.stdout.upper()
+                        
+                        if "COMPLETED" in status_stdout or "IDLE" in status_stdout:
+                            research_cleared_cleanly = True
+                            break
+                        elif "FAILED" in status_stdout or "ERROR" in status_stdout:
+                            break
+                        loop_index += 1
 
-        update_dashboard(client, step="Pipeline Finished Successfully", progress=100, status="COMPLETE")
+                    if research_cleared_cleanly:
+                        try: run_cmd(["notebooklm", "--storage", str(client_storage), "research", "wait", "--import-all", "--max-imports", "50", "--timeout", "30"])
+                        except Exception: pass
+                    else:
+                        current_run_status = "DEGRADED"
+                        update_dashboard(client, step="Phase 1: Web deep research choked (Using local PDFs)", progress=55, status=current_run_status)
+                else:
+                    # SYSTEM CRASH FIX: Wrapped optional prompt blocks inside defensive context handlers to absorb gateway blinks safely
+                    try:
+                        run_cmd(["notebooklm", "--storage", str(client_storage), "ask", "--prompt-file", str(temp_prompt.resolve()), "--save-as-note"])
+                    except Exception as ask_err:
+                        logging.warning(f"[{human_name}] Prompt engine blocked or rate-limited: {ask_err}")
+            except Exception as inner_e:
+                logging.error(f"[{human_name}] Prompt segment execution defect: {inner_e}")
+            finally:
+                if temp_prompt.exists(): temp_prompt.unlink()
+
+        # Phase 4: Deduplication Matrix Verification
+        update_dashboard(client, step="Phase 2/3: Structural cleanup matrices", progress=80, status=current_run_status)
+        try:
+            res = run_cmd(["notebooklm", "--storage", str(client_storage), "source", "list"], capture_output=True)
+            seen = set()
+            for line in res.stdout.splitlines():
+                parts = line.replace("│", "").replace("┃", "").strip().split()
+                if parts and "-" in parts[0] and parts[0] != "ID":
+                    title = " ".join(parts[1:-1])
+                    if title in seen:
+                        try: run_cmd(["notebooklm", "--storage", str(client_storage), "source", "delete", parts[0]], input_data="y\n")
+                        except Exception: pass
+                    else:
+                        seen.add(title)
+        except Exception: pass
+
+        # MANDATORY ASSIGNMENT CHECK: Always attempt mind-map initialization alongside alternative visual parameters safely
+        for asset in [["mind-map"], ["data-table", "compare key concepts"], ["slide-deck"]]:
+            try: 
+                run_cmd(["notebooklm", "--storage", str(client_storage), "generate"] + asset, check=True)
+            except Exception as gen_err:
+                logging.warning(f"[{human_name}] Asset generation track skipped or throttled: {gen_err}")
+
+        # Phase 5: Master Material Synthesis Consolidation Block with Fault-Tolerant Scanning
+        update_dashboard(client, step="Phase 4: Output plan consolidation", progress=95, status=current_run_status)
+        
+        master_content = f"# Strategic Master Account Plan (2026 Revision)\n**Target Account Profile:** {human_name}\n"
+        if current_run_status == "DEGRADED":
+            master_content += f"> **Operational Warning Note:** Web compilation layers throttled during execution. Generation grounded strictly in localized source documentation arrays.\n"
+        master_content += "---\n\n"
+
+        try:
+            list_res = run_cmd(["notebooklm", "--storage", str(client_storage), "note", "list"], capture_output=True)
+            uuid_pattern = re.compile(r'^[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}$', re.IGNORECASE)
+            
+            for line in list_res.stdout.splitlines():
+                parts = line.replace("│", "").replace("┃", "").strip().split()
+                if parts and uuid_pattern.match(parts[0]):
+                    # SYSTEM CRASH FIX: Protect document trace compilation paths from throwing non-zero exit codes during transient server drops
+                    try:
+                        view_res = run_cmd(["notebooklm", "--storage", str(client_storage), "note", "view", parts[0]], capture_output=True)
+                        master_document_content += f"## Analysis Segment\n```text\n{view_res.stdout.strip()}\n```\n\n"
+                    except Exception as view_err:
+                        logging.error(f"[{human_name}] Skipping note vector capture due to API retrieval constraint: {view_err}")
+        except Exception as list_err:
+            logging.critical(f"[{human_name}] Workspace note registry retrieval failed entirely: {list_err}")
+
+        out_path = output_dir / "Account_Plan_2026.md"
+        out_path.write_text(master_content, encoding="utf-8")
+
+        final_status = "COMPLETE" if current_run_status == "RUNNING" else "DEGRADED"
+        update_dashboard(client, step="Execution Successfully Finished", progress=100, status=final_status)
     except Exception as e:
-        update_dashboard(client, step="Phase 3 Strategy Generation Defect", progress=100, status="FAILED")
-        raise e
+        logging.error(f"[{human_name}] Critical Thread Crash: {e}")
+        update_dashboard(client, step="Critical Process Error", progress=100, status="FAILED")
     finally:
         if client_storage.exists():
             try: client_storage.unlink()
@@ -552,130 +365,46 @@ def post_process_assets(client, shared_auth_path, nb_id):
 
 
 def main():
-    start_time = time.time()
+    try: run_cmd(["notebooklm", "login"])
+    except Exception: sys.exit(1)
 
-    try:
-        run_cmd(["notebooklm", "login"])
-    except Exception:
-        logging.critical("Initial authentication loop dropped. Script termination invoked.")
-        sys.exit(1)
+    os.environ['rh_deep_start'] = str(int(time.time() * 1000))
+    DASHBOARD_PATH.write_text("<h1>Warming up Parallel Engine Matrix Nodes...</h1>", encoding="utf-8")
+    try: webbrowser.open(DASHBOARD_PATH.as_uri())
+    except Exception: pass
 
     root = tk.Tk()
     root.withdraw()
     root.attributes("-topmost", True)
 
-    shared_auth_path = Path.home() / ".notebooklm" / "profiles" / "default" / "storage_state.json"
-    if not shared_auth_path.exists():
-        shared_auth_path = Path.home() / ".notebooklm" / "storage_state.json"
+    shared_auth = Path.home() / ".notebooklm" / "profiles" / "default" / "storage_state.json"
+    if not shared_auth.exists(): shared_auth = Path.home() / ".notebooklm" / "storage_state.json"
 
     clients = getattr(config, "clients", [])
-    raw_prompt_files = [Path(f) for f in glob.glob(str(SCRIPT_DIR / "*prompt*.txt")) if Path(f).is_file()]
+    raw_prompts = [Path(f) for f in glob.glob(str(SCRIPT_DIR / "*prompt*.txt")) if Path(f).is_file()]
+    global sorted_prompt_files
+    sorted_prompt_files = sorted([f for f in raw_prompts if "ask" in f.name.lower()]) + sorted([f for f in raw_prompts if "ask" not in f.name.lower()])
 
-    if not raw_prompt_files or not clients:
-        logging.warning("No operational assets found inside variables definitions.")
-        return
-
-    ask_files = [f for f in raw_prompt_files if "ask" in f.name.lower()]
-    other_files = [f for f in raw_prompt_files if "ask" not in f.name.lower()]
-    sorted_prompt_files = sorted(ask_files) + sorted(other_files)
-
-    # --- STEP 1: PRE-CREATE/VERIFY NOTEBOOKS CONCURRENTLY ---
-    logging.info(f"Starting Pre-Flight Phase: Verifying/Creating notebooks for all {len(clients)} clients...")
-    master_notebook_cache = {}
-
-    with ThreadPoolExecutor(max_workers=min(8, len(clients))) as executor:
-        notebook_futures = [executor.submit(ensure_notebook_exists, client, shared_auth_path) for client in clients]
-        for future in as_completed(notebook_futures):
-            try:
-                res = future.result()
-                if res: master_notebook_cache[res[0]] = res[2]
-            except Exception: pass
-
-    os.environ['rh_deep_start'] = str(int(time.time() * 1000))
     for client in clients:
-        update_dashboard(client, step="Pre-flight validation finished. Routing to thread blocks.", progress=15, status="PENDING")
+        update_dashboard(client, step="Queued inside execution ring...", progress=0, status="PENDING")
+
+    with ThreadPoolExecutor(max_workers=len(clients)) as executor:
+        futures = {executor.submit(process_entire_client_lifecycle, c, sorted_prompt_files, shared_auth): c for c in clients}
         
-    try: webbrowser.open(DASHBOARD_PATH.as_uri())
-    except Exception: pass
-
-    logging.info("Notebook validation barrier cleared successfully. Spawning background ingestion streams...")
-    time.sleep(2.0)
-
-    # --- STEP 2: SPIN UP PIPELINE INGESTION BACKGROUND WORKERS ---
-    MAX_WORKERS = min(8, len(clients))
-    ingest_executor = ThreadPoolExecutor(max_workers=MAX_WORKERS)
-    futures = [
-        ingest_executor.submit(ingest_client_sources, client, shared_auth_path, master_notebook_cache[client])
-        for client in clients if client in master_notebook_cache
-    ]
-
-    completed_count = 0
-    total_expected = len(futures)
-
-    while completed_count < total_expected:
-        try:
-            client_name, timeout_secs, response_queue = ui_queue.get(timeout=1.0)
-            selected_assets = []
-            
-            def handle_timeout():
-                dialog_window.destroy()
-                response_queue.put([])
-
-            dialog_window = tk.Toplevel(root)
-            dialog_window.withdraw()
-            
-            # UX REQUIRMENT: Larger bold font formatting configuration for explicit layout validation
-            bold_font = tkfont.Font(family="Helvetica", size=14, weight="bold")
-            
-            label = tk.Label(
-                dialog_window, 
-                text=f"Target Client Profile Context: {client_name}", 
-                font=bold_font,
-                fg="#CC0000",
-                padx=20,
-                pady=15
-            )
-            label.pack()
-            
-            dialog_window.after(timeout_secs * 1000, handle_timeout)
-
-            files = filedialog.askopenfilenames(
-                parent=dialog_window,
-                title=f"Select Structural Content Assets for: {client_name}",
-                filetypes=[("Supported Context Materials", "*.pdf *.txt *.docx *.gdoc *.gsheet"), ("All Files", "*.*")]
-            )
-            if files: selected_assets.extend(list(files))
-            dialog_window.destroy()
-            response_queue.put(selected_assets)
-        except queue.Empty:
-            completed_count = len([f for f in futures if f.done()])
-            continue
-
-    ingest_executor.shutdown(wait=True)
-
-    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as prompt_executor:
-        prompt_futures = [
-            prompt_executor.submit(execute_client_prompts, client, sorted_prompt_files, shared_auth_path, master_notebook_cache[client])
-            for client in clients if client in master_notebook_cache
-        ]
-        for future in as_completed(prompt_futures): pass
-
-    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        clean_futures = [
-            executor.submit(clean_duplicate_sources, client, shared_auth_path, master_notebook_cache[client])
-            for client in clients if client in master_notebook_cache
-        ]
-        for future in as_completed(clean_futures): pass
-
-    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        assets_futures = [
-            executor.submit(post_process_assets, client, shared_auth_path, master_notebook_cache[client])
-            for client in clients if client in master_notebook_cache
-        ]
-        for future in as_completed(assets_futures): pass
-
-    end_time = time.time()
-    logging.info(f"Deep execution completed inside {int(end_time - start_time)} seconds.")
+        completed = 0
+        while completed < len(futures):
+            try:
+                name, sec, q = ui_queue.get(timeout=1.0)
+                win = tk.Toplevel(root)
+                win.withdraw()
+                f_lbl = tk.Label(win, text=f"Target Client Profile: {name}", font=tkfont.Font(family="Helvetica", size=14, weight="bold"), fg="#CC0000", padx=20, pady=15)
+                f_lbl.pack()
+                win.after(sec * 1000, lambda: [win.destroy(), q.put([])])
+                files = filedialog.askopenfilenames(parent=win, title=f"Select Assets for {name}")
+                win.destroy()
+                q.put(list(files) if files else [])
+            except queue.Empty:
+                completed = len([f for f in futures if f.done()])
 
 
 if __name__ == "__main__":

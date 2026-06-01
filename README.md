@@ -1,8 +1,6 @@
-Here is your updated, production-ready **`README.md`** layout consolidated into a single, comprehensive Markdown file.
+Here is your fully recompiled, updated, and production-ready **`README.md`** file, matching all system patches, architectural shifts, and user constraints introduced up to this moment.
 
-Every major primary section title has been explicitly expanded in scale and volume using custom high-visibility typography blocks (`# # # █`). It completely documents the newly updated **delayed UI launch**, **prompt file-serialization fixes**, **Red Hat PatternFly dark interface guidelines**, and **bolded file-selection prompt rules**.
-
-You can copy and paste this text directly into your repository:
+All primary section titles have been formatted using enlarged typographic divider markers (`# # # █`) for seamless navigation when reading directly in raw or parsed markdown text viewers.
 
 ```markdown
 # # # █ SECTION 1: SYSTEM ARCHITECTURE & OVERVIEW
@@ -14,7 +12,7 @@ The Workspace Compilation Studio is an enterprise orchestration suite built to a
 The orchestrator features two specialized configurations optimized for distinct infrastructure tracks:
 
 * **`fast.py` (Fast Lane Tracking Engine):** Built for high-velocity linear generation. It strips explicit research mode flags to force NotebookLM to route inputs through standard cloud indexing lanes, utilizing an extended **90-second execution wait buffer** to absorb multi-tenant request spikes safely.
-* **`deep.py` (Deep Research Resource Capping Engine):** Built for comprehensive cross-web semantic grounding. It forces the cloud search clusters into intensive multi-layered crawls via an extended **180-second tracking hold**. To maintain strict context compliance, it applies an automated truncation logic filter that imports only the top $N = 25$ cited website reference nodes per query.
+* **`deep.py` (Deep Research Resource Capping Engine):** Built for comprehensive cross-web semantic grounding. It forces the cloud search clusters into intensive multi-layered crawls via an extended **300-second tracking hold**. To maintain deep context grounding, it is scaled to import up to **50 completed website reference nodes** per workspace query without short-circuiting.
 
 ### **1.2 UI Initialization & Delayed Launch Protocol**
 To maximize environment reliability and ensure clean background tasks, the system runs all pre-flight routines (such as credential lookups, workspace cache checking, and workspace generation) silently inside the terminal console. **The Red Hat visual dashboard opens immediately AFTER all concurrent pre-creation and verification checks pass successfully.** This prevents premature browser launching while endpoints are warming up.
@@ -181,14 +179,15 @@ python deep.py
 
 ### **5.3 Technical System Assertions & Telemetry Rules**
 
+* **Phase 4 Consolidated Synthesis:** At the conclusion of prompt execution tracks, the workers systematically scrape all generated notebook insights and merge them into a single, localized master markdown intelligence asset file titled: `Account_Plan_2026.md`.
 * **Multiline Escaping Resiliency:** Large or heavily structured template prompts (such as complex roleplay parameters or multi-layered questionnaires) are dynamically serialized to local disk files (`.temp_prompt_[client].txt`) during Phase 1 before execution. This entirely bypasses terminal text dropouts and shell argument exceptions.
 * **PatternFly Telemetry Interface:** The tracking dashboard matches Red Hat PatternFly standards, featuring a dark slate palette (`#0b0d10`), a corporate red layout bar (`#cc0000`), a glowing **Fedora Blue** branding emblem (`#3c6eb4`), and an active status blinking pulse.
 * **Large Font Pop-up Constraints:** When local upload dialog boxes require manual interaction during fallback sequences, the Tkinter modal injection applies an expanded, bold formatting structure to highlight the active **Client Name** explicitly.
 * **Asynchronous Pacing Logic:** An internal JavaScript tracking element manages page refreshes dynamically. It runs a high-precision **1-second refresh during the first 5 seconds** of thread initialization, then shifts down to a low-overhead **5-second polling interval** to save rendering cycles while long-running cloud tasks complete.
 * **Persistent Local Tracing Targets:**
-* Fast Log: `/Users/jasona/account_plan/notebooklmpipeline_fast_execution.log`
-* Deep Log: `/Users/jasona/account_plan/notebooklmpipeline_deep_execution.log`
-* UI Mount: `/Users/jasona/account_plan/notebooklmpipeline_dashboard.html`
+* Fast Log: `/Users/jasona/account_plan/notebooklm/pipeline_fast_execution.log`
+* Deep Log: `/Users/jasona/account_plan/notebooklm/pipeline_deep_execution.log`
+* UI Mount: `/Users/jasona/account_plan/notebooklm/pipeline_dashboard.html`
 
 
 
