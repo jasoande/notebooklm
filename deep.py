@@ -69,21 +69,22 @@ dashboard_state = {}
 
 
 def update_dashboard(client_token, step=None, progress=None, status=None):
-    """Thread-safe updates to the high-fidelity Red Hat Fedora themed visualization layer."""
+    """Thread-safe updates to the high-fidelity Red Hat themed visualization layer."""
     client_name = getattr(config, f"{client_token}_name", client_token)
-    if client_token not in dashboard_state:
-        dashboard_state[client_token] = {
-            "name": client_name,
-            "step": "Initializing",
-            "progress": 0,
-            "status": "PENDING"
-        }
-    
-    if step is not None: dashboard_state[client_token]["step"] = step
-    if progress is not None: dashboard_state[client_token]["progress"] = progress
-    if status is not None: dashboard_state[client_token]["status"] = status
+    with dashboard_lock:
+        if client_token not in dashboard_state:
+            dashboard_state[client_token] = {
+                "name": client_name,
+                "step": "Initializing",
+                "progress": 0,
+                "status": "PENDING"
+            }
 
-    html_content = f"""<!DOCTYPE html>
+        if step is not None: dashboard_state[client_token]["step"] = step
+        if progress is not None: dashboard_state[client_token]["progress"] = progress
+        if status is not None: dashboard_state[client_token]["status"] = status
+
+        html_content = f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -108,9 +109,10 @@ def update_dashboard(client_token, step=None, progress=None, status=None):
         .client-name {{ font-size: 1.25rem; font-weight: 700; color: #ffffff; display: flex; align-items: center; }}
         .client-hash {{ font-family: "Liberation Mono", monospace; font-size: 0.8rem; color: #8a8d90; background: #212427; padding: 3px 8px; border-radius: 4px; margin-left: 12px; border: 1px solid #2f3133; }}
         .progress-track {{ background: #212427; border-radius: 4px; height: 14px; overflow: hidden; margin: 15px 0; border: 1px solid #2f3133; }}
-        .progress-fill {{ height: 100%; width: 0%; transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1); background: linear-gradient(90deg, #cc0000 0%, #ff3333 100%); }}
+        .progress-fill {{ height: 100%; width: 0%; transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1); background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%); }}
         .status-pill {{ font-size: 0.75rem; font-weight: 700; padding: 5px 14px; border-radius: 30px; text-transform: uppercase; letter-spacing: 0.75px; box-shadow: inset 0 1px 2px rgba(255,255,255,0.1); }}
         .pill-RUNNING {{ background: rgba(236,122,8,0.15); color: #f4c176; border: 1px solid #ec7a08; }}
+        .pill-DEGRADED {{ background: rgba(219, 145, 0, 0.2); color: #ffab40; border: 1px solid #ff9100; }}
         .pill-COMPLETE {{ background: rgba(62,134,53,0.15); color: #8bc34a; border: 1px solid #3e8635; }}
         .pill-FAILED {{ background: rgba(201,25,11,0.15); color: #ff6b6b; border: 1px solid #c9190b; }}
         .pill-PENDING {{ background: #212427; color: #d1d5db; border: 1px solid #4f5255; }}
@@ -146,13 +148,14 @@ def update_dashboard(client_token, step=None, progress=None, status=None):
         </div>
         <div class="grid-container">
     """
-    for token, data in dashboard_state.items():
-        fill_color = "linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%)"
-        if data["status"] == "COMPLETE": fill_color = "linear-gradient(90deg, #3e8635 0%, #5ba94c 100%)"
-        if data["status"] == "FAILED": fill_color = "linear-gradient(90deg, #c9190b 0%, #ef4444 100%)"
-        if data["status"] == "RUNNING": fill_color = "linear-gradient(90deg, #ec7a08 0%, #f59e0b 100%)"
+        for token, data in dashboard_state.items():
+            fill_color = "linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%)"
+            if data["status"] == "COMPLETE": fill_color = "linear-gradient(90deg, #3e8635 0%, #5ba94c 100%)"
+            if data["status"] == "FAILED": fill_color = "linear-gradient(90deg, #c9190b 0%, #ef4444 100%)"
+            if data["status"] == "RUNNING": fill_color = "linear-gradient(90deg, #ec7a08 0%, #f59e0b 100%)"
+            if data["status"] == "DEGRADED": fill_color = "linear-gradient(90deg, #ff9100 0%, #ffab40 100%)"
 
-        html_content += f"""
+            html_content += f"""
             <div class="rh-card">
                 <div class="card-header">
                     <span class="client-name">{data["name"]} <span class="client-hash">{token}</span></span>
@@ -167,9 +170,7 @@ def update_dashboard(client_token, step=None, progress=None, status=None):
                 </div>
             </div>
         """
-    html_content += "</div></div></body></html>"
-    
-    with dashboard_lock:
+        html_content += "</div></div></body></html>"
         try:
             DASHBOARD_PATH.write_text(html_content, encoding="utf-8")
         except IOError:
@@ -177,20 +178,17 @@ def update_dashboard(client_token, step=None, progress=None, status=None):
 
 
 def run_cmd(cmd, check=True, text=True, capture_output=False, input_data=None):
-    """Safely executes system commands with optional input injection."""
-    logging.debug(f"Executing system command: {' '.join(cmd)}")
+    """Executes system commands with safety staggering profiles to prevent API throttling."""
+    time.sleep(random.uniform(0.2, 0.6))
+    logging.debug(f"Executing command: {' '.join(cmd)}")
     try:
-        res = subprocess.run(
-            cmd, check=check, text=text, capture_output=capture_output, input=input_data
-        )
-        return res
+        return subprocess.run(cmd, check=check, text=text, capture_output=capture_output, input=input_data)
     except subprocess.CalledProcessError as e:
-        logging.error(f"Command failed with exit code {e.returncode}: {' '.join(cmd)}")
+        logging.error(f"Command failed with code {e.returncode}: {' '.join(cmd)}")
         raise e
 
 
 def fetch_notebook_cache(storage_path=None):
-    """Fetches the notebook list using an explicit storage path to bypass race conditions."""
     cmd = ["notebooklm"]
     if storage_path:
         cmd.extend(["--storage", str(storage_path)])
@@ -216,7 +214,6 @@ def fetch_notebook_cache(storage_path=None):
 
 
 def ensure_notebook_exists(client, shared_auth_path):
-    """Worker task to ensure a notebook exists for a client before any UI prompts happen."""
     client_storage = SCRIPT_DIR / f".storage_{client}.json"
     update_dashboard(client, step="Pre-flight verification", progress=5, status="RUNNING")
     try:
@@ -236,17 +233,17 @@ def ensure_notebook_exists(client, shared_auth_path):
             logging.info(f"[{name_value}] Notebook missing. Pre-creating workspace now...")
             res = run_cmd(["notebooklm", "--storage", str(client_storage), "create", name_value], capture_output=True)
             uuid_match = re.search(r'([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})', res.stdout, re.IGNORECASE)
-            
+
             if uuid_match:
                 nb_id = uuid_match.group(1)
             else:
                 time.sleep(2.0)
                 notebook_cache = fetch_notebook_cache(storage_path=client_storage)
                 nb_id = notebook_cache.get(name_value)
-                
+
             if not nb_id:
                 raise Exception(f"Failed to verify notebook creation for: {name_value}")
-        
+
         update_dashboard(client, step="Workspace Link Ready", progress=15, status="RUNNING")
         return client, name_value, nb_id
     except Exception as e:
@@ -254,14 +251,11 @@ def ensure_notebook_exists(client, shared_auth_path):
         raise e
     finally:
         if client_storage.exists():
-            try:
-                client_storage.unlink()
-            except Exception:
-                pass
+            try: client_storage.unlink()
+            except Exception: pass
 
 
 def extract_id_from_google_shortcut(file_path):
-    """Parses local desktop sync pointer files and extracts raw Document IDs."""
     try:
         content = Path(file_path).read_text(errors='ignore')
         if '"doc_id"' in content or '"id"' in content:
@@ -270,13 +264,11 @@ def extract_id_from_google_shortcut(file_path):
             if doc_id: return doc_id
         url_match = re.search(r'https://docs\.google\.com/[^/]+/d/([a-zA-Z0-9-_]+)', content)
         if url_match: return url_match.group(1)
-    except Exception:
-        pass
+    except Exception: pass
     return None
 
 
 def convert_sheet_shortcut_to_csv_text(file_path, client_storage):
-    """Fallback context compiler to convert spreadsheets into flat CSV data for indexing."""
     try:
         import pandas as pd
         csv_path = Path(file_path).with_suffix('.csv')
@@ -284,20 +276,17 @@ def convert_sheet_shortcut_to_csv_text(file_path, client_storage):
             df = pd.read_excel(file_path.replace('.gsheet', '.xlsx'))
             df.to_csv(csv_path, index=False)
             return csv_path
-    except Exception:
-        pass
+    except Exception: pass
     return None
 
 
 def request_files_from_main_thread(client_name, timeout_secs=90):
-    """Thread-safe bridge that sends a UI request to the main thread and awaits results."""
     response_queue = queue.Queue()
     ui_queue.put((client_name, timeout_secs, response_queue))
     return response_queue.get()
 
 
 def try_upload_local_file_with_fallbacks(client_storage, target_id, source_title, name_value):
-    """Uses verified standard click format targeting option parameters properly."""
     variations = [
         ["notebooklm", "--storage", str(client_storage), "source", "add", "--title", source_title, target_id],
         ["notebooklm", "--storage", str(client_storage), "source", "add", target_id],
@@ -306,13 +295,11 @@ def try_upload_local_file_with_fallbacks(client_storage, target_id, source_title
         try:
             res = run_cmd(cmd, capture_output=True)
             return res.stdout
-        except subprocess.CalledProcessError:
-            continue
+        except subprocess.CalledProcessError: continue
     return None
 
 
 def ingest_client_sources(client, shared_auth_path, nb_id):
-    """PHASE 0: Handles collection, localization parsing, and remote upload of custom client knowledge assets."""
     client_storage = SCRIPT_DIR / f".storage_ingest_{client}.json"
     temporary_files_to_clean = []
     name_value = getattr(config, f"{client}_name", f"UnknownClient-{client}")
@@ -401,12 +388,12 @@ def ingest_client_sources(client, shared_auth_path, nb_id):
 
 
 def execute_client_prompts(client, sorted_prompt_files, shared_auth_path, nb_id):
-    """PHASE 1: Runs inference and sequencing prompts once global environment data ingestion completes."""
     client_storage = SCRIPT_DIR / f".storage_prompts_{client}.json"
     name_value = getattr(config, f"{client}_name", f"UnknownClient-{client}")
     industry_value = getattr(config, f"{client}_industry", "")
 
-    update_dashboard(client, step="Phase 1: Sequential prompting cycle", progress=45, status="RUNNING")
+    current_run_status = "RUNNING"
+    update_dashboard(client, step="Phase 1: Sequential prompting cycle", progress=45, status=current_run_status)
     try:
         if shared_auth_path.exists():
             client_storage.write_text(shared_auth_path.read_text())
@@ -418,65 +405,67 @@ def execute_client_prompts(client, sorted_prompt_files, shared_auth_path, nb_id)
 
         for p_idx, prompt_file in enumerate(sorted_prompt_files):
             step_pct = int(45 + ((p_idx / len(sorted_prompt_files)) * 25))
-            update_dashboard(client, step=f"Phase 1: Processing {prompt_file.name}", progress=step_pct, status="RUNNING")
-            
+            update_dashboard(client, step=f"Phase 1: Processing {prompt_file.name}", progress=step_pct, status=current_run_status)
+
             prompt_content = prompt_file.read_text()
             updated_content = prompt_content.replace("$industry", industry_value).replace("$name", name_value)
 
             gqp = output_dir / prompt_file.name
             gqp.write_text(updated_content)
 
-            if "ask" in gqp.name.lower():
-                try:
-                    logging.info(f"[{name_value}] Initiating fast web research agent loop from prompt file query: {gqp.name}")
-                    run_cmd(["notebooklm", "--storage", str(client_storage), "source", "add-research", "--prompt-file", str(gqp.resolve()), "--no-wait"])
-                    
-                    timeout_limit = 60  
-                    loop_idx = 0
-                    while loop_idx < timeout_limit:
-                        status_res = run_cmd(["notebooklm", "--storage", str(client_storage), "research", "status"], capture_output=True)
-                        status_text = status_res.stdout.upper()
-                        
-                        if "COMPLETED" in status_text or "IDLE" in status_text: break
-                        elif any(term in status_text for term in ["PROCESSING", "INGESTING", "RUNNING", "PENDING", "SYNCHRONIZING"]):
-                            update_dashboard(client, step="Phase 1: Web Research Ingesting...", progress=step_pct, status="RUNNING")
-                            time.sleep(4.0)  
-                            loop_idx += 1
-                        else:
-                            time.sleep(4.0)
-                            loop_idx += 1
-                            
-                    run_cmd(["notebooklm", "--storage", str(client_storage), "research", "wait", "--import-all", "--timeout", "90"])
-                    time.sleep(1.0)
-                except subprocess.CalledProcessError as e:
-                    logging.error(f"[{name_value}] Web research indexing execution sequence failed: {e}")
-            else:
-                temp_prompt_carrier = SCRIPT_DIR / f".temp_prompt_{client}.txt"
-                temp_prompt_carrier.write_text(updated_content, encoding="utf-8")
-                try:
-                    run_cmd(["notebooklm", "--storage", str(client_storage), "ask", "--prompt-file", str(temp_prompt_carrier.resolve()), "--save-as-note"])
-                    run_cmd(["notebooklm", "--storage", str(client_storage), "status"])
-                except subprocess.CalledProcessError as e:
-                    logging.error(f"[{name_value}] Ask chat dialogue context failed: {e}")
-                finally:
-                    if temp_prompt_carrier.exists():
-                        temp_prompt_carrier.unlink()
+            temp_prompt_carrier = SCRIPT_DIR / f".temp_prompt_{client}_{prompt_file.name}"
+            temp_prompt_carrier.write_text(updated_content, encoding="utf-8")
+            
+            try:
+                if "ask" in gqp.name.lower():
+                    logging.info(f"[{name_value}] Initiating deep web research agent loop from prompt file query: {gqp.name}")
+                    run_cmd(["notebooklm", "--storage", str(client_storage), "source", "add-research", "--prompt-file", str(temp_prompt_carrier.resolve()), "--mode", "deep", "--no-wait"])
 
-        update_dashboard(client, step="Phase 1: Prompts processed", progress=70, status="RUNNING")
+                    timeout_limit = 60  # 60 * 5s = 300s max deep buffer hold
+                    loop_idx = 0
+                    research_cleared_cleanly = False
+                    
+                    while loop_idx < timeout_limit:
+                        time.sleep(5.0)
+                        status_res = subprocess.run(["notebooklm", "--storage", str(client_storage), "research", "status"], text=True, capture_output=True)
+                        status_text = status_res.stdout.upper()
+
+                        if "COMPLETED" in status_text or "IDLE" in status_text:
+                            research_cleared_cleanly = True
+                            break
+                        elif "FAILED" in status_text or "ERROR" in status_text:
+                            break
+                        loop_idx += 1
+
+                    if research_cleared_cleanly:
+                        try: run_cmd(["notebooklm", "--storage", str(client_storage), "research", "wait", "--import-all", "--max-imports", "50", "--timeout", "30"])
+                        except Exception: pass
+                    else:
+                        current_run_status = "DEGRADED"
+                        update_dashboard(client, step="Phase 1: Web research choked (Using local PDFs)", progress=55, status=current_run_status)
+                else:
+                    try:
+                        run_cmd(["notebooklm", "--storage", str(client_storage), "ask", "--prompt-file", str(temp_prompt_carrier.resolve()), "--save-as-note"])
+                    except Exception as ask_err:
+                        logging.warning(f"[{name_value}] Prompt note ingestion throttled dynamically: {ask_err}")
+            except Exception as inner_e:
+                logging.error(f"[{name_value}] Prompt segment execution defect: {inner_e}")
+            finally:
+                if temp_prompt_carrier.exists():
+                    temp_prompt_carrier.unlink()
+
+        update_dashboard(client, step="Phase 1: Prompts processed", progress=70, status=current_run_status)
+        return current_run_status
     except Exception as e:
         update_dashboard(client, step="Phase 1 Prompt Processing Defect", progress=100, status="FAILED")
         raise e
     finally:
         if client_storage.exists():
-            try:
-                client_storage.unlink()
-                context_file = Path(str(client_storage) + ".context.json")
-                if context_file.exists(): context_file.unlink()
+            try: client_storage.unlink()
             except Exception: pass
 
 
 def clean_duplicate_sources(client, shared_auth_path, nb_id):
-    """Scans the notebook source registry for a client and purges identical titles automatically."""
     client_storage = SCRIPT_DIR / f".storage_clean_{client}.json"
     update_dashboard(client, step="Phase 2: Deduplication Sweep", progress=75, status="RUNNING")
     try:
@@ -509,12 +498,57 @@ def clean_duplicate_sources(client, shared_auth_path, nb_id):
                     run_cmd(["notebooklm", "--storage", str(client_storage), "source", "delete", source_id], input_data="y\n")
                     time.sleep(0.5)
                 except subprocess.CalledProcessError: pass
-            run_cmd(["notebooklm", "--storage", str(client_storage), "status"])
 
-        update_dashboard(client, step="Phase 2: Registry Deduplicated", progress=85, status="RUNNING")
+        update_dashboard(client, step="Phase 2: Registry Deduplicated", progress=80, status="RUNNING")
     except Exception as e:
         update_dashboard(client, step="Phase 2 Cleanup Failure", progress=100, status="FAILED")
         raise e
+    finally:
+        if client_storage.exists():
+            try: client_storage.unlink()
+            except Exception: pass
+
+
+def combine_notes_in_cloud(client, shared_auth_path, nb_id):
+    """PHASE 2.5: Fetches all generated analysis notes inside the workspace and compiles them into a Master_Account_Plan note item inside the live cloud platform."""
+    client_storage = SCRIPT_DIR / f".storage_cloud_combine_{client}.json"
+    human_name = getattr(config, f"{client}_name", client)
+    update_dashboard(client, step="Phase 2.5: Initializing Cloud Note Combination Layer", progress=82, status="RUNNING")
+    try:
+        if shared_auth_path.exists():
+            client_storage.write_text(shared_auth_path.read_text())
+            time.sleep(0.1)
+
+        run_cmd(["notebooklm", "--storage", str(client_storage), "use", nb_id])
+        list_res = run_cmd(["notebooklm", "--storage", str(client_storage), "note", "list"], capture_output=True)
+        uuid_pattern = re.compile(r'^[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}$', re.IGNORECASE)
+        
+        note_ids = []
+        for line in list_res.stdout.splitlines():
+            parts = line.replace("│", "").replace("┃", "").strip().split()
+            if parts and uuid_pattern.match(parts[0]):
+                note_ids.append(parts[0])
+                
+        if not note_ids:
+            logging.warning(f"[{human_name}] No matching note structures discovered to synthesize inside cloud lanes.")
+            return
+
+        compiled_cloud_content = f"=== UNIFIED MASTER STRATEGIC ACCOUNT PLAN ENGINE ===\\n"
+        compiled_cloud_content += f"Account Identification Target: {human_name}\\n\\n"
+
+        for idx, note_id in enumerate(note_ids):
+            try:
+                view_res = run_cmd(["notebooklm", "--storage", str(client_storage), "note", "view", note_id], capture_output=True)
+                escaped_note_body = view_res.stdout.replace('"', '\\"').replace("'", "\\'").replace("\n", "\\n")
+                compiled_cloud_content += f"--- STRATEGIC OBJECTIVE CHAPTER {idx + 1} ---\\n{escaped_note_body}\\n\\n"
+            except Exception: pass
+
+        run_cmd(["notebooklm", "--storage", str(client_storage), "ask", f"Save the following text precisely as a single note titled 'Master_Account_Plan': {compiled_cloud_content}", "--save-as-note"])
+        logging.info(f"[{human_name}] Master_Account_Plan note successfully created inside cloud workspace registry.")
+        update_dashboard(client, step="Phase 2.5: Cloud Master Note Synthesized", progress=86, status="RUNNING")
+        
+    except Exception as e:
+        logging.error(f"[{human_name}] Error synthesizing unified cloud workspace note structure: {e}")
     finally:
         if client_storage.exists():
             try: client_storage.unlink()
@@ -534,8 +568,7 @@ def post_process_assets(client, shared_auth_path, nb_id):
         generation_commands = [
             (["mind-map"], "Mind Map Generation"),
             (["data-table", "compare key concepts"], "Tabular Matrix Definition"),
-            (["slide-deck"], "Executive Slide Deck Representation"),
-            (["infographic", "--orientation", "portrait"], "Portrait Infographic Mapping")
+            (["slide-deck"], "Executive Slide Deck Representation")
         ]
 
         for sub_args, label in generation_commands:
@@ -543,26 +576,24 @@ def post_process_assets(client, shared_auth_path, nb_id):
                 cmd = ["notebooklm", "--storage", str(client_storage), "generate"] + sub_args
                 run_cmd(cmd, check=True)
                 time.sleep(1.0)
-            except subprocess.CalledProcessError: 
-                pass
+            except subprocess.CalledProcessError as gen_err:
+                logging.warning(f"[{client}] Optional layout asset generation trace throttled: {gen_err}")
 
-        update_dashboard(client, step="Pipeline Finished Successfully", progress=100, status="COMPLETE")
     except Exception as e:
-        update_dashboard(client, step="Phase 3 Strategy Generation Defect", progress=100, status="FAILED")
-        raise e
+        logging.error(f"[{client}] Phase 3 Asset Compilation Defect: {e}")
     finally:
         if client_storage.exists():
             try: client_storage.unlink()
             except Exception: pass
 
 
-def consolidate_workspace_notes(client, shared_auth_path, nb_id):
+def consolidate_workspace_notes(client, shared_auth_path, nb_id, current_run_status):
     """PHASE 4: Fetches all compiled note assets within a workspace and synthesizes them into a unified markdown file."""
     client_storage = SCRIPT_DIR / f".storage_consolidate_{client}.json"
     human_name = getattr(config, f"{client}_name", client)
     output_plan_path = (SCRIPT_DIR / client / "Account_Plan_2026.md").resolve()
-    
-    update_dashboard(client, step="Phase 4: Compiling Consolidated Master Account Plan", progress=95, status="RUNNING")
+
+    update_dashboard(client, step="Phase 4: Compiling Consolidated Master Account Plan", progress=95, status=current_run_status)
     try:
         if shared_auth_path.exists():
             client_storage.write_text(shared_auth_path.read_text())
@@ -570,38 +601,32 @@ def consolidate_workspace_notes(client, shared_auth_path, nb_id):
 
         run_cmd(["notebooklm", "--storage", str(client_storage), "use", nb_id])
         list_res = run_cmd(["notebooklm", "--storage", str(client_storage), "note", "list"], capture_output=True)
-        
-        note_ids = []
-        for line in list_res.stdout.splitlines():
-            clean_line = line.replace("│", "").replace("┃", "").strip()
-            parts = clean_line.split()
-            if parts and parts[0] != "ID" and "-" in parts[0]:
-                note_ids.append(parts[0])
-                
-        if not note_ids:
-            logging.warning(f"[{human_name}] No explicit note assets discovered to consolidate.")
-            return
+        uuid_pattern = re.compile(r'^[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}$', re.IGNORECASE)
 
         master_document_content = f"# Strategic Master Account Plan (2026 Revision)\n"
         master_document_content += f"**Target Organization Account Profile:** {human_name}\n"
-        master_document_content += f"**Ecosystem Orchestration Trace:** Sync Group Fast Track\n"
+        if current_run_status == "DEGRADED":
+            master_document_content += f"> **Operational Warning Note:** Web compilation layers throttled during execution. Generation grounded strictly in localized source documentation arrays.\n"
         master_document_content += f"---\n\n"
 
-        for idx, note_id in enumerate(note_ids):
-            try:
-                view_res = run_cmd(["notebooklm", "--storage", str(client_storage), "note", "view", note_id], capture_output=True)
-                master_document_content += f"## Chapter {idx + 1}: Generated Workspace Analysis Note Vector\n"
-                master_document_content += f"```text\n{view_res.stdout.strip()}\n```\n\n"
-                time.sleep(0.2)
-            except subprocess.CalledProcessError:
-                pass
+        for line in list_res.stdout.splitlines():
+            parts = line.replace("│", "").replace("┃", "").strip().split()
+            if parts and uuid_pattern.match(parts[0]):
+                try:
+                    view_res = run_cmd(["notebooklm", "--storage", str(client_storage), "note", "view", parts[0]], capture_output=True)
+                    master_document_content += f"## Analysis Segment\n```text\n{view_res.stdout.strip()}\n```\n\n"
+                    time.sleep(0.2)
+                except Exception: pass
 
         output_plan_path.parent.mkdir(parents=True, exist_ok=True)
         output_plan_path.write_text(master_document_content, encoding="utf-8")
         logging.info(f"[{human_name}] Consolidated execution plan written: {output_plan_path}")
         
+        final_status = "COMPLETE" if current_run_status == "RUNNING" else "DEGRADED"
+        update_dashboard(client, step="Pipeline Finished Successfully", progress=100, status=final_status)
     except Exception as e:
         logging.error(f"[{human_name}] Error compiling multi-note strategy file: {e}")
+        update_dashboard(client, step="Phase 4 Strategy Generation Defect", progress=100, status="FAILED")
     finally:
         if client_storage.exists():
             try: client_storage.unlink()
@@ -648,10 +673,10 @@ def main():
                 if res: master_notebook_cache[res[0]] = res[2]
             except Exception: pass
 
-    os.environ['rh_fast_start'] = str(int(time.time() * 1000))
+    os.environ['rh_deep_start'] = str(int(time.time() * 1000))
     for client in clients:
         update_dashboard(client, step="Pre-flight validation finished. Routing to thread blocks.", progress=15, status="PENDING")
-        
+
     try: webbrowser.open(DASHBOARD_PATH.as_uri())
     except Exception: pass
 
@@ -673,26 +698,26 @@ def main():
         try:
             client_name, timeout_secs, response_queue = ui_queue.get(timeout=1.0)
             selected_assets = []
-            
+
             def handle_timeout():
                 dialog_window.destroy()
                 response_queue.put([])
 
             dialog_window = tk.Toplevel(root)
             dialog_window.withdraw()
-            
+
             bold_font = tkfont.Font(family="Helvetica", size=14, weight="bold")
-            
+
             label = tk.Label(
-                dialog_window, 
-                text=f"Target Client Profile Context: {client_name}", 
+                dialog_window,
+                text=f"Target Client Profile Context: {client_name}",
                 font=bold_font,
                 fg="#CC0000",
                 padx=20,
                 pady=15
             )
             label.pack()
-            
+
             dialog_window.after(timeout_secs * 1000, handle_timeout)
 
             files = filedialog.askopenfilenames(
@@ -709,12 +734,16 @@ def main():
 
     ingest_executor.shutdown(wait=True)
 
+    client_degraded_states = {}
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as prompt_executor:
-        prompt_futures = [
-            prompt_executor.submit(execute_client_prompts, client, sorted_prompt_files, shared_auth_path, master_notebook_cache[client])
+        prompt_futures = {
+            prompt_executor.submit(execute_client_prompts, client, sorted_prompt_files, shared_auth_path, master_notebook_cache[client]): client
             for client in clients if client in master_notebook_cache
-        ]
-        for future in as_completed(prompt_futures): pass
+        }
+        for future in as_completed(prompt_futures):
+            c_tok = prompt_futures[future]
+            try: client_degraded_states[c_tok] = future.result()
+            except Exception: client_degraded_states[c_tok] = "RUNNING"
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         clean_futures = [
@@ -722,6 +751,14 @@ def main():
             for client in clients if client in master_notebook_cache
         ]
         for future in as_completed(clean_futures): pass
+
+    # --- PHASE 2.5: LIVE NOTE CONSOLIDATION AND UPLOAD ---
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as combine_executor:
+        combine_futures = [
+            combine_executor.submit(combine_notes_in_cloud, client, shared_auth_path, master_notebook_cache[client])
+            for client in clients if client in master_notebook_cache
+        ]
+        for future in as_completed(combine_futures): pass
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         assets_futures = [
@@ -733,7 +770,7 @@ def main():
     # --- STEP 3: CONCURRENT STRATEGIC NOTE SYNTHESIS CONSOLIDATION (PHASE 4) ---
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         consolidation_futures = [
-            executor.submit(consolidate_workspace_notes, client, shared_auth_path, master_notebook_cache[client])
+            executor.submit(consolidate_workspace_notes, client, shared_auth_path, master_notebook_cache[client], client_degraded_states.get(client, "RUNNING"))
             for client in clients if client in master_notebook_cache
         ]
         for future in as_completed(consolidation_futures): pass
