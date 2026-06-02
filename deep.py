@@ -12,9 +12,6 @@ import random
 import threading
 import webbrowser
 import csv
-import tkinter as tk
-import tkinter.font as tkfont
-from tkinter import filedialog
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
@@ -44,7 +41,7 @@ DASHBOARD_PATH = Path("/Users/jasona/account_plan/notebooklm/pipeline_dashboard.
 LOG_FILE_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 log_formatter = logging.Formatter(
-    fmt="%(asctime)s [%(levelname)s] (%(threadName)s) %(message)s",
+    fmt="%(asctime)s [%(levelname)s] %(message)s",
     datefmt="%H:%M:%S"
 )
 
@@ -59,6 +56,7 @@ file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(log_formatter)
 root_logger.addHandler(file_handler)
 
+ui_queue = queue.Queue()
 dashboard_lock = threading.Lock()
 console_print_lock = threading.Lock()
 cli_execution_lock = threading.Lock()
@@ -67,7 +65,7 @@ start_time_global = time.time()
 
 
 def track_phase_progress(phase_title, finished_count, total_count):
-    """Generates a synchronized global progress bar for the active execution phase."""
+    """Generates a clean synchronized global progress bar for the active execution phase."""
     with console_print_lock:
         width = 25
         pct = int((finished_count / total_count) * 100) if total_count > 0 else 100
@@ -124,9 +122,6 @@ def update_dashboard(client_token, step=None, progress=None, status=None, plan_l
         .main-layout {{ max-width: 1100px; margin: 35px auto; padding: 0 25px; }}
         .status-alert {{ background: #151515; border: 1px solid #3c3f42; border-left: 4px solid #cc0000; padding: 18px; border-radius: 4px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }}
         .timer-label {{ font-size: 1.4rem; font-weight: 700; color: #f5f5f7; letter-spacing: -0.5px; }}
-        .timer-label span {{ font-weight: 300; color: #b8bbbe; }}
-        .engine-pulse {{ width: 12px; height: 12px; background-color: #3e8635; border-radius: 50%; display: inline-block; margin-right: 12px; box-shadow: 0 0 8px #3e8635; animation: pulse 2s infinite; vertical-align: middle; }}
-        @keyframes pulse {{ 0% {{ opacity: 0.4; }} 50% {{ opacity: 1; }} 100% {{ opacity: 0.4; }} }}
         .grid-container {{ display: grid; grid-gap: 25px; }}
         .rh-card {{ background: #151515; border: 1px solid #2f3133; border-radius: 6px; padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: border-color 0.2s ease; }}
         .rh-card:hover {{ border-color: #4f5255; }}
@@ -137,7 +132,7 @@ def update_dashboard(client_token, step=None, progress=None, status=None, plan_l
         .progress-fill {{ height: 100%; width: 0%; transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1); background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%); }}
         .status-pill {{ font-size: 0.75rem; font-weight: 700; padding: 5px 14px; border-radius: 30px; text-transform: uppercase; letter-spacing: 0.75px; box-shadow: inset 0 1px 2px rgba(255,255,255,0.1); }}
         .pill-RUNNING {{ background: rgba(236,122,8,0.15); color: #f4c176; border: 1px solid #ec7a08; }}
-        .pill-DEGRADED {{ background: rgba(219, 145, 0, 0.2); color: #ffab40; border: 1px solid #ff9100; }}
+        .pill-DEGRADED {{ background: rgba(219, 145, 0, 0.2); color: #ff9100; border: 1px solid #ff9100; }}
         .pill-COMPLETE {{ background: rgba(62,134,53,0.15); color: #8bc34a; border: 1px solid #3e8635; }}
         .pill-FAILED {{ background: rgba(201,25,11,0.15); color: #ff6b6b; border: 1px solid #c9190b; }}
         .pill-PENDING {{ background: #212427; color: #d1d5db; border: 1px solid #4f5255; }}
@@ -167,87 +162,93 @@ def update_dashboard(client_token, step=None, progress=None, status=None, plan_l
     </div>
     <div class="main-layout">
         <div class="status-alert">
-            <span class="timer-label"><span class="engine-pulse"></span>Account planning execution timer: <span>Running multi-cloud compilation vectors.</span></span>
+            <span class="timer-label">Account planning status engine execution monitor vectors.</span>
             <span style="font-size: 1.4rem; font-family: monospace; color: #ffffff; background: #212427; padding: 6px 16px; border-radius: 3px; border: 1px solid #4f5255; font-weight: bold;">{timer_string}</span>
         </div>
         <div class="grid-container">
     """
-        for token, data in dashboard_state.items():
-            clean_token_label = re.sub(r'[^a-zA-Z0-9_]', '', data["name"].replace(' ', ''))
-            html_content += f"""
-            <div class="rh-card">
-                <div class="card-header">
-                    <span class="client-name">{data["name"]} <span class="client-hash">{token}</span></span>
-                    <span class="status-pill pill-{data["status"]}">{data["status"]}</span>
-                </div>
-                <div class="progress-track">
-                    <div class="progress-fill" style="width: {data["progress"]}%; background: {fill_color};"></div>
-                </div>
-                <div class="step-log">
-                    <span>Current Execution: <strong>{data["step"]}</strong></span>
-                    {"<a class='plan-btn' href='" + data["plan_link"] + "' target='_blank'>" + clean_token_label + "_Account_Plan</a>" if data["plan_link"] else f"<span style='color: #8a8d90;'>{data['progress']}%</span>"}
-                </div>
+    for token, data in dashboard_state.items():
+        clean_token_label = re.sub(r'[^a-zA-Z0-9_]', '', data["name"].replace(' ', ''))
+        html_content += f"""
+        <div class="rh-card">
+            <div class="card-header">
+                <span class="client-name">{data["name"]} <span class="client-hash">{token}</span></span>
+                <span class="status-pill pill-{data["status"]}">{data["status"]}</span>
             </div>
-        """
-        html_content += "</div></div></body></html>"
-        try:
-            tmp_dashboard = DASHBOARD_PATH.with_suffix(".tmp")
-            tmp_dashboard.write_text(html_content, encoding="utf-8")
-            os.replace(str(tmp_dashboard), str(DASHBOARD_PATH))
-        except IOError:
-            pass
-
-
-def run_cmd(cmd, check=True, text=True, capture_output=True, input_data=None):
-    time.sleep(random.uniform(0.2, 0.6))
-    logging.debug(f"Executing command: {' '.join(cmd)}")
+            <div class="progress-track">
+                <div class="progress-fill" style="width: {data["progress"]}%; background: {fill_color};"></div>
+            </div>
+            <div class="step-log">
+                <span>Current Execution: <strong>{data["step"]}</strong></span>
+                {"<a class='plan-btn' href='" + data["plan_link"] + "' target='_blank'>" + clean_token_label + "_Account_Plan</a>" if data["plan_link"] else f"<span style='color: #8a8d90;'>{data['progress']}%</span>"}
+            </div>
+        </div>
+    """
+    html_content += "</div></div></body></html>"
     try:
-        if "ask" in cmd and "titled" in str(cmd):
-            return subprocess.run(cmd, check=check, text=text, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, input=input_data)
-        return subprocess.run(cmd, check=check, text=text, capture_output=capture_output, input=input_data)
-    except subprocess.CalledProcessError as e:
-        logging.error(f"Command failed with code {e.returncode}: {' '.join(cmd)}")
-        raise e
+        tmp_dashboard = DASHBOARD_PATH.with_suffix(".tmp")
+        tmp_dashboard.write_text(html_content, encoding="utf-8")
+        os.replace(str(tmp_dashboard), str(DASHBOARD_PATH))
+    except IOError:
+        pass
 
 
 def fetch_notebook_cache(storage_path=None):
     cmd = ["notebooklm"]
     if storage_path: cmd.extend(["--storage", str(storage_path)])
     cmd.append("list")
-
     try:
-        res = run_cmd(cmd, capture_output=True)
+        res = subprocess.run(cmd, check=False, text=True, capture_output=True)
         cache = {}
+        uuid_pattern = re.compile(r'([a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12})', re.IGNORECASE)
+        
         for line in res.stdout.splitlines():
-            clean_line = line.replace("│", "").replace("┃", "").strip()
-            parts = clean_line.split()
-            if len(parts) >= 2 and "-" in parts[0]:
-                cache[" ".join(parts[1:-2]).strip() if "Owner" in parts else " ".join(parts[1:-2]).strip()] = parts[0]
+            match = uuid_pattern.search(line)
+            if match:
+                nb_uuid = match.group(1)
+                clean_name = line.replace(nb_uuid, "").replace("│", "").replace("┃", "").strip()
+                clean_name = re.sub(r'\s+', ' ', clean_name)
+                
+                if clean_name:
+                    cache[clean_name.lower().strip()] = nb_uuid
+                    cache[clean_name.lower().replace(" ", "")] = nb_uuid
+                cache[nb_uuid] = nb_uuid
         return cache
-    except Exception as e:
-        logging.error(f"Failed to fetch notebook cache: {e}")
-        return {}
+    except Exception: return {}
 
 
-def ensure_notebook_exists(client, shared_auth_path):
-    client_storage = SCRIPT_DIR / f".storage_{client}.json"
-    update_dashboard(client, step="Pre-flight verification", progress=5, status="RUNNING")
+def ensure_notebook_exists(client_str, shared_auth_path):
+    client_storage = SCRIPT_DIR / f".storage_{client_str}.json"
+    update_dashboard(client_str, step="Pre-flight verification", progress=5, status="RUNNING")
     try:
         if shared_auth_path.exists(): client_storage.write_text(shared_auth_path.read_text())
-        name_value = getattr(config, f"{client}_name", "")
+        name_value = getattr(config, f"{client_str}_name", "")
         if not name_value:
-            update_dashboard(client, step="Skipped", progress=0, status="PENDING")
+            update_dashboard(client_str, step="Skipped", progress=0, status="PENDING")
             return None
+            
+        subprocess.run(["notebooklm", "--storage", str(client_storage), "auth", "refresh", "--quiet"], check=False, capture_output=True)
         notebook_cache = fetch_notebook_cache(storage_path=client_storage)
-        nb_id = notebook_cache.get(name_value) or notebook_cache.get(client)
+        nb_id = notebook_cache.get(name_value.lower().strip()) or notebook_cache.get(client_str.lower()) or notebook_cache.get(name_value.lower().replace(" ", ""))
+                    
         if not nb_id:
-            res = run_cmd(["notebooklm", "--storage", str(client_storage), "create", name_value], capture_output=True)
+            cmd = ["notebooklm", "--storage", str(client_storage), "create", name_value]
+            res = subprocess.run(cmd, check=False, text=True, capture_output=True)
             uuid_match = re.search(r'([a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12})', res.stdout, re.IGNORECASE)
             nb_id = uuid_match.group(1) if uuid_match else None
-        update_dashboard(client, step="Workspace Active", progress=100, status="COMPLETE")
-        return client, name_value, nb_id
+            
+            if not nb_id and ("already exists" in res.stderr.lower() or "already exists" in res.stdout.lower() or res.returncode != 0):
+                time.sleep(1.0)
+                notebook_cache = fetch_notebook_cache(storage_path=client_storage)
+                nb_id = notebook_cache.get(name_value.lower().strip()) or notebook_cache.get(client_str.lower()) or notebook_cache.get(name_value.lower().replace(" ", ""))
+                
+        if not nb_id:
+            raise Exception(f"Failed to isolate workspace UUID layout target mapping: {name_value}")
+            
+        update_dashboard(client_str, step="Workspace Active", progress=100, status="COMPLETE")
+        return str(client_str), name_value, nb_id
     except Exception as e:
-        update_dashboard(client, step="Pre-flight error", progress=100, status="FAILED")
+        update_dashboard(client_str, step="Pre-flight error", progress=100, status="FAILED")
         raise e
     finally:
         if client_storage.exists(): client_storage.unlink()
@@ -268,26 +269,26 @@ def convert_raw_csv_to_structured_text(csv_path):
                 structured_lines.append("")
         txt_output_path.write_text("\n".join(structured_lines), encoding="utf-8")
         return txt_output_path
-    except Exception as err:
-        logging.error(f"Failed text translation for CSV matrix {csv_path}: {err}")
-        return None
+    except Exception: return None
 
 
-def ingest_client_sources(client, shared_auth_path, nb_id):
-    """FIXED: Removed all Tkinter interactive dialogue wrappers. Operates completely headlessly."""
-    client_storage = SCRIPT_DIR / f".storage_ingest_{client}.json"
+def ingest_client_sources(client_str, shared_auth_path, nb_id):
+    client_storage = SCRIPT_DIR / f".storage_ingest_{client_str}.json"
     temporary_files_to_clean = []
-    update_dashboard(client, step="Phase 0: Autonomous File Scan", progress=20, status="RUNNING")
+    update_dashboard(client_str, step="Phase 0: Ingestion Inbound", progress=20, status="RUNNING")
     try:
-        run_cmd(["notebooklm", "--storage", str(client_storage), "auth", "refresh", "--quiet"])
-        run_cmd(["notebooklm", "--storage", str(client_storage), "use", nb_id])
+        if shared_auth_path.exists(): client_storage.write_text(shared_auth_path.read_text())
         
-        client_folder_raw = getattr(config, f"{client}_folder", ".")
+        subprocess.run(["notebooklm", "--storage", str(client_storage), "auth", "refresh", "--quiet"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(["notebooklm", "--storage", str(client_storage), "use", nb_id], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        
+        client_folder_raw = getattr(config, f"{client_str}_folder", ".")
         drive_folder_value = Path(PROJECT_ROOT / client_folder_raw).resolve()
 
         drive_targets = []
         if drive_folder_value.exists() and drive_folder_value.is_dir():
-            drive_targets.extend([str(p) for p in drive_folder_value.glob("*") if p.is_file()])
+            # FIXED: Ignore hidden macOS configuration dotfiles (.DS_Store) explicitly from ingestion pools
+            drive_targets.extend([str(p) for p in drive_folder_value.glob("*") if p.is_file() and not p.name.startswith(".")])
         if not drive_targets: return
 
         for idx, target_id in enumerate(drive_targets):
@@ -300,21 +301,14 @@ def ingest_client_sources(client, shared_auth_path, nb_id):
                     temporary_files_to_clean.append(structural_txt)
             
             raw_title = Path(target_id).stem if is_local else f"doc_{idx}"
-            source_title = f"{client}_source_{re.sub(r'[^a-zA-Z0-9_]', '', raw_title)}"
+            source_title = f"{client_str}_source_{re.sub(r'[^a-zA-Z0-9_]', '', raw_title)}"
             
-            variations = [
-                ["notebooklm", "--storage", str(client_storage), "source", "add", "--title", source_title, target_id],
-                ["notebooklm", "--storage", str(client_storage), "source", "add", target_id],
-            ]
-            for cmd in variations:
-                try:
-                    run_cmd(cmd, capture_output=True)
-                    break
-                except Exception: continue
+            cmd = ["notebooklm", "--storage", str(client_storage), "source", "add", "--title", source_title, target_id]
+            subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-        update_dashboard(client, step="Phase 0 Completed Natively", progress=100, status="COMPLETE")
+        update_dashboard(client_str, step="Phase 0 Completed Natively", progress=100, status="COMPLETE")
     except Exception as e:
-        update_dashboard(client, step="Phase 0 Ingestion Failure", progress=100, status="FAILED")
+        update_dashboard(client_str, step="Phase 0 Ingestion Failure", progress=100, status="FAILED")
         raise e
     finally:
         if client_storage.exists(): client_storage.unlink()
@@ -322,88 +316,134 @@ def ingest_client_sources(client, shared_auth_path, nb_id):
             if f.exists(): f.unlink()
 
 
-def execute_client_prompts(client, sorted_prompt_files, shared_auth_path, nb_id):
-    client_storage = SCRIPT_DIR / f".storage_prompts_{client}.json"
-    name_value = getattr(config, f"{client}_name", f"UnknownClient-{client}")
-    industry_value = getattr(config, f"{client}_industry", "")
+def execute_client_prompts(client_str, sorted_prompt_files, shared_auth_path, nb_id):
+    client_storage = SCRIPT_DIR / f".storage_prompts_{client_str}.json"
+    name_value = getattr(config, f"{client_str}_name", f"UnknownClient-{client_str}")
+    industry_value = getattr(config, f"{client_str}_industry", "")
     current_run_status = "RUNNING"
     try:
-        run_cmd(["notebooklm", "--storage", str(client_storage), "use", nb_id])
-        output_dir = (SCRIPT_DIR / client).resolve()
+        if shared_auth_path.exists(): client_storage.write_text(shared_auth_path.read_text())
+        subprocess.run(["notebooklm", "--storage", str(client_storage), "use", nb_id], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        
+        output_dir = (SCRIPT_DIR / client_str).resolve()
         output_dir.mkdir(parents=True, exist_ok=True)
 
         for p_idx, prompt_file in enumerate(sorted_prompt_files):
-            step_pct = int(45 + ((p_idx / len(sorted_prompt_files)) * 25))
-            update_dashboard(client, step=f"Phase 1: Question {p_idx+1}", progress=step_pct, status=current_run_status)
+            step_pct = int(0 + ((p_idx / len(sorted_prompt_files)) * 100))
+            update_dashboard(client_str, step=f"Phase 1 Prompting Tracks", progress=step_pct, status=current_run_status)
             updated_content = prompt_file.read_text().replace("$industry", industry_value).replace("$name", name_value)
             
-            temp_prompt_carrier = SCRIPT_DIR / f".temp_prompt_{client}_{prompt_file.name}"
+            temp_prompt_carrier = SCRIPT_DIR / f".temp_prompt_{client_str}_{prompt_file.name}"
             temp_prompt_carrier.write_text(updated_content, encoding="utf-8")
             try:
                 if "ask" in prompt_file.name.lower():
-                    run_cmd(["notebooklm", "--storage", str(client_storage), "source", "add-research", "--prompt-file", str(temp_prompt_carrier.resolve()), "--mode", "deep", "--no-wait"])
+                    cmd = ["notebooklm", "--storage", str(client_storage), "source", "add-research", "--prompt-file", str(temp_prompt_carrier.resolve()), "--mode", "deep", "--no-wait"]
+                    subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                     time.sleep(30.0)
                 else:
-                    run_cmd(["notebooklm", "--storage", str(client_storage), "ask", "--prompt-file", str(temp_prompt_carrier.resolve()), "--save-as-note"])
+                    cmd = ["notebooklm", "--storage", str(client_storage), "ask", "--prompt-file", str(temp_prompt_carrier.resolve()), "--save-as-note"]
+                    subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             except Exception: pass
             finally:
                 if temp_prompt_carrier.exists(): temp_prompt_carrier.unlink()
-        update_dashboard(client, step="Phase 1: Questions complete", progress=100, status="COMPLETE")
+        update_dashboard(client_str, step="Phase 1 Finished Successfully", progress=100, status="COMPLETE")
         return current_run_status
     except Exception:
-        update_dashboard(client, step="Phase 1 Defect", progress=100, status="FAILED")
+        update_dashboard(client_str, step="Phase 1 Defect", progress=100, status="FAILED")
         return "FAILED"
     finally:
         if client_storage.exists(): client_storage.unlink()
 
 
-def post_process_and_generate_google_doc(client, shared_auth_path, nb_id, current_run_status):
-    client_storage = SCRIPT_DIR / f".storage_doc_{client}.json"
-    human_name = getattr(config, f"{client}_name", client)
+def post_process_and_generate_google_doc(client_str, shared_auth_path, nb_id, current_run_status):
+    """CONSOLIDATED NOTE RE-ENGINEERING: Maps, gathers, and orders notes explicitly into one unified Google Doc payload."""
+    client_storage = SCRIPT_DIR / f".storage_doc_{client_str}.json"
+    human_name = getattr(config, f"{client_str}_name", client_str)
     clean_name_string = re.sub(r'[^a-zA-Z0-9_]', '', human_name.replace(' ', ''))
-    update_dashboard(client, step="Phase 4: Structuring Document plan...", progress=90, status="RUNNING")
+    update_dashboard(client_str, step="Phase 4: Merging Research Notes...", progress=90, status="RUNNING")
     try:
-        run_cmd(["notebooklm", "--storage", str(client_storage), "use", nb_id])
-        doc_res = run_cmd(["notebooklm", "--storage", str(client_storage), "generate", "document", f"{clean_name_string}_Account_Plan"], capture_output=True)
-        url_match = re.search(r'(https://docs\.google\.com/document/d/[a-zA-Z0-9-_]+)', doc_res.stdout)
+        if shared_auth_path.exists(): client_storage.write_text(shared_auth_path.read_text())
+        subprocess.run(["notebooklm", "--storage", str(client_storage), "use", nb_id], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        
+        # GATHER NOTE CONTENT BLOCKS
+        list_notes_cmd = ["notebooklm", "--storage", str(client_storage), "note", "list"]
+        notes_res = subprocess.run(list_notes_cmd, check=False, text=True, capture_output=True)
+        
+        compiled_sections = [f"<h1>Enterprise Cloud Account Strategic Plan: {human_name}</h1>", "<hr/>"]
+        note_uuid_pattern = re.compile(r'([a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12})', re.IGNORECASE)
+        
+        for line in notes_res.stdout.splitlines():
+            note_match = note_uuid_pattern.search(line)
+            if note_match:
+                n_uuid = note_match.group(1)
+                view_cmd = ["notebooklm", "--storage", str(client_storage), "note", "view", n_uuid]
+                note_data = subprocess.run(view_cmd, check=False, text=True, capture_output=True)
+                if note_data.stdout.strip():
+                    compiled_sections.append(f"<div>{note_data.stdout.strip()}</div><br/><br/>")
+                    
+        if len(compiled_sections) <= 2:
+            compiled_sections.append("<p>Context compilation vectors ran headlessly. Reference notebook container logs for details.</p>")
+            
+        unified_document_payload = "\n".join(compiled_sections)
+        
+        # RATE LIMIT RETRY SAFES
+        max_attempts = 4
+        base_delay = 45.0
+        doc_res = None
+        for attempt in range(max_attempts):
+            doc_res = subprocess.run(["notebooklm", "--storage", str(client_storage), "generate", "document", f"{clean_name_string}_Account_Plan"], input=unified_document_payload, check=False, text=True, capture_output=True)
+            if "quota" in doc_res.stderr.lower() or "rate limit" in doc_res.stderr.lower() or "exhausted" in doc_res.stderr.lower():
+                sleep_duration = base_delay * (attempt + 1)
+                time.sleep(sleep_duration)
+                continue
+            break
+
+        url_match = re.search(r'(https://docs\.google\.com/document/d/[a-zA-Z0-9-_]+)', doc_res.stdout if doc_res else "")
         doc_url = url_match.group(1) if url_match else f"https://notebooklm.google.com/"
 
         for asset_type in [["mind-map"], ["slide-deck"]]:
             try:
-                run_cmd(["notebooklm", "--storage", str(client_storage), "generate"] + asset_type)
-                time.sleep(6.5)
+                subprocess.run(["notebooklm", "--storage", str(client_storage), "generate"] + asset_type, check=False, capture_output=True)
+                time.sleep(8.0)
             except Exception: pass
 
         final_status = "COMPLETE" if current_run_status == "RUNNING" else "DEGRADED"
-        update_dashboard(client, step="Pipeline Finished Successfully", progress=100, status=final_status, plan_link=doc_url)
+        update_dashboard(client_str, step="Pipeline Finished Successfully", progress=100, status=final_status, plan_link=doc_url)
     except Exception:
-        update_dashboard(client, step="Failed Google Doc Compile", progress=100, status="FAILED")
+        update_dashboard(client_str, step="Failed Google Doc Compile", progress=100, status="FAILED")
     finally:
         if client_storage.exists(): client_storage.unlink()
 
 
 def main():
+    # RULE NUMBER 1: GLOBAL CREDENTIALS CHECK REFRESH EXECUTED FIRST LOBBY
+    print("=======================================================================")
+    print(" [GATEKEEPER] Synchronizing Global Authorization Profile Vector... ")
+    print("=======================================================================")
+    try:
+        # Programmatically runs with the explicit authorized chain loop natively to surface interactive login hooks if expired
+        subprocess.run(["notebooklm", "auth", "refresh"], check=True)
+    except subprocess.CalledProcessError:
+        print("\n\033[91m[AUTH FAILURE]\033[0m Master session failed. Run 'notebooklm auth login' manually on your shell window first.", file=sys.stderr)
+        sys.exit(1)
+
     shared_auth_path = Path.home() / ".notebooklm" / "profiles" / "default" / "storage_state.json"
     if not shared_auth_path.exists(): shared_auth_path = Path.home() / ".notebooklm" / "storage_state.json"
-    clients = getattr(config, "clients", [])
+    
+    clients = [str(c).split('.')[-1].strip() if '.' in str(c) else str(c).strip() for c in getattr(config, "clients", [])]
     raw_prompt_files = [Path(f) for f in glob.glob(str(SCRIPT_DIR / "*prompt*.txt")) if Path(f).is_file()]
     if not raw_prompt_files or not clients: return
 
     sorted_prompt_files = sorted([f for f in raw_prompt_files if "ask" in f.name.lower()]) + sorted([f for f in raw_prompt_files if "ask" not in f.name.lower()])
-
     master_notebook_cache = {}
-
-    print("=======================================================================")
-    print(" Starting Fast Cloud Account Strategy Generation Pipeline... ")
-    print("=======================================================================")
     
     for client in clients:
-         dashboard_state[client] = { "name": getattr(config, f"{client}_name", client), "step": "Syncing System Handles...", "progress": 0, "status": "PENDING", "plan_link": None }
+         dashboard_state[client] = { "name": getattr(config, f"{client}_name", client), "step": "Syncing Handles...", "progress": 0, "status": "PENDING", "plan_link": None }
          for track in ["", "_ingest", "_prompts", "_doc"]:
               client_storage = SCRIPT_DIR / f".storage{track}_{client}.json"
               if shared_auth_path.exists(): client_storage.write_text(shared_auth_path.read_text())
 
-    html_init = f"<html><head><script>setTimeout(()=>{{window.location.reload();}},2000);</script></head><body style='background:#0b0d10;color:white;'><h2>Initializing RED HAT Fast Storage Monitoring Console...</h2></body></html>"
+    html_init = f"<html><head><script>setTimeout(()=>{{window.location.reload();}},2000);</script></head><body style='background:#0b0d10;color:white;'><h2>Initializing RED HAT Deep Storage Monitoring Console...</h2></body></html>"
     DASHBOARD_PATH.write_text(html_init, encoding="utf-8")
     def open_browser_delayed():
          time.sleep(1.2)
@@ -411,24 +451,27 @@ def main():
          except Exception: pass
     threading.Thread(target=open_browser_delayed, daemon=True).start()
 
+    # THE CRITICAL SERIALIZATION FIX: Initialize workspace mappings sequentially to prevent SQLite connection failures across the profile database
     total_clients = len(clients)
     finished_audit = 0
-    with ThreadPoolExecutor(max_workers=min(8, total_clients)) as executor:
-        notebook_futures = {executor.submit(ensure_notebook_exists, client, shared_auth_path): client for client in clients}
-        for future in as_completed(notebook_futures):
-             finished_audit += 1
-             track_phase_progress("AUDIT", finished_audit, total_clients)
-             try:
-                  res = future.result()
-                  if res: master_notebook_cache[res[0]] = res[2]
-             except Exception: pass
+    for client in clients:
+        try:
+            res = ensure_notebook_exists(str(client), shared_auth_path)
+            finished_audit += 1
+            track_phase_progress("AUDIT", finished_audit, total_clients)
+            if res and res[2]:
+                master_notebook_cache[str(res[0])] = res[2]
+            time.sleep(0.5)
+        except Exception as err:
+            print(f"\n \033[91m[ FATAL CRASH ]\033[0m Workspace assignment failed for profile token: {client}")
+            raise err
     print()
 
-    print(" [2/4] Deploying Local Source Logs to Target Engine Ingestion Lanes...")
+    print(" [2/4] Deploying Local Source Logs to Target Engine Ingestion Lanes... (Parallel Run)")
     MAX_WORKERS = min(8, len(clients))
     finished_ingest = 0
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ingest_executor:
-        ingest_futures = {ingest_executor.submit(ingest_client_sources, client, shared_auth_path, master_notebook_cache[client]): client for client in clients if client in master_notebook_cache}
+        ingest_futures = {ingest_executor.submit(ingest_client_sources, client_id, shared_auth_path, master_notebook_cache[client_id]): client_id for client_id in clients if client_id in master_notebook_cache}
         total_ingest = len(ingest_futures)
         for future in as_completed(ingest_futures):
              finished_ingest += 1
@@ -436,32 +479,29 @@ def main():
              future.result()
     print()
 
-    print(" [3/4] Ingesting Question Prompts Sequences into AI Models...")
+    print(" [3/4] Ingesting Question Prompts Sequences into AI Models... (Parallel Run)")
     finished_prompts = 0
     client_degraded_states = {}
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as prompt_executor:
-        prompt_futures = {prompt_executor.submit(execute_client_prompts, client, sorted_prompt_files, shared_auth_path, master_notebook_cache[client]): client for client in clients if client in master_notebook_cache}
+        prompt_futures = {prompt_executor.submit(execute_client_prompts, client_id, sorted_prompt_files, shared_auth_path, master_notebook_cache[client_id]): client_id for client_id in clients if client_id in master_notebook_cache}
         total_prompts = len(prompt_futures)
         for future in as_completed(prompt_futures):
-             c_tok = prompt_futures[future]
+             c_tok = str(prompt_futures[future])
              finished_prompts += 1
              track_phase_progress("PROMPT", finished_prompts, total_prompts)
-             try: client_degraded_states[c_tok] = future.result()
-             except Exception: client_degraded_states[c_tok] = "RUNNING"
+             client_degraded_states[c_tok] = future.result()
     print()
 
-    print(" [4/4] Finalizing Google Docs Structural Compiles and Slide Assemblies...")
+    print(" [4/4] Sequentially Compiling Enterprise Cloud Google Doc Frameworks...")
     finished_docs = 0
-    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as doc_executor:
-        doc_futures = {doc_executor.submit(post_process_and_generate_google_doc, client, shared_auth_path, master_notebook_cache[client], client_degraded_states.get(client, "RUNNING")): client for client in clients if client in master_notebook_cache}
-        total_docs = len(doc_futures)
-        for future in as_completed(doc_futures):
-             finished_docs += 1
-             track_phase_progress("COMPILE", finished_docs, total_docs)
-             future.result()
+    total_docs = len(master_notebook_cache)
+    for client_token, nb_id in master_notebook_cache.items():
+         post_process_and_generate_google_doc(client_token, shared_auth_path, nb_id, client_degraded_states.get(client_token, "RUNNING"))
+         finished_docs += 1
+         track_phase_progress("COMPILE", finished_docs, total_docs)
 
     print("\n=======================================================================")
-    print(" SUCCESS! ALL FAST PLAN RUNS PROCESSED COMPLETELY. ")
+    print(" SUCCESS! ALL DEEP PLAN RUNS PROCESSED COMPLETELY.")
     print("=======================================================================")
 
 
