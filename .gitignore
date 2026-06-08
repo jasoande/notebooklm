@@ -1,0 +1,153 @@
+# Project APE - Git Ignore File
+
+# ==============================================================================
+# CRITICAL: Prevent Customer Data Leaks
+# ==============================================================================
+
+# Never commit actual client configuration (contains customer names, paths)
+vars.py
+
+# Never commit authentication files
+.shared_auth.json
+.storage_*.json
+*.context.json
+
+# ==============================================================================
+# Generated Files
+# ==============================================================================
+
+# Dashboard and logs
+project_ape_dashboard.html
+*.log
+
+# State files
+pipeline_state.json
+pipeline_metrics.json
+
+# Temporary files
+.temp_*
+*.tmp
+*.pyc
+__pycache__/
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# ==============================================================================
+# IDE and OS Files
+# ==============================================================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+
+# Vim
+*.swp
+*.swo
+*~
+
+# ==============================================================================
+# Customer Documents
+# ==============================================================================
+
+# Never commit customer PDFs or data
+*.pdf
+!example.pdf  # Allow example files
+*.csv
+!example.csv
+
+# Document folders
+Venella_2026/
+customer_documents/
+
+# ==============================================================================
+# Test and Development
+# ==============================================================================
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# MyPy
+.mypy_cache/
+
+# ==============================================================================
+# Build and Distribution
+# ==============================================================================
+
+# Python build artifacts
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Wheel files
+*.whl
+
+# ==============================================================================
+# Documentation Build
+# ==============================================================================
+
+# Sphinx
+docs/_build/
+docs/_static/
+docs/_templates/
+
+# ==============================================================================
+# Secrets and Credentials
+# ==============================================================================
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Credentials
+credentials.json
+token.json
+service-account.json
+
+# SSH keys
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+
+# ==============================================================================
+# Backup Files
+# ==============================================================================
+
+*.bak
+*.backup
+*~
+
+# ==============================================================================
+# Notes
+# ==============================================================================
+#
+# IMPORTANT REMINDERS:
+#
+# 1. ALWAYS use vars.example.py as template
+# 2. NEVER commit vars.py (contains customer data)
+# 3. NEVER commit authentication files (.storage_*.json)
+# 4. NEVER commit customer documents (PDFs, CSVs)
+# 5. NEVER commit credentials or API keys
+#
+# To share configuration:
+# - Update vars.example.py with new options
+# - Document in SETUP_GUIDE.md
+# - Never include actual customer names or paths
+#
+# ==============================================================================

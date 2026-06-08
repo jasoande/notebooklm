@@ -1,4 +1,0 @@
-Based on the above and on the knowledge of Red Hat's tech stack and services, provide a summary of what could be Red Hat's business value for the different objectives of the customer. Provide up to 5 different value statements based on the individual $name objectives. Start by articulating the value statement for the customer, using the Value Statement model:
-Issue: Describe the customer's key business goals or challenges, linking them to their initiatives.
-Action: Explain how we can uniquely address these issues, highlighting our distinct capabilities.
-Value: Answer the "So what?" question by clearly articulating the benefits our actions will deliver, using the customer's own terms.

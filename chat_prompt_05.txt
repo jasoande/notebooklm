@@ -1,6 +1,0 @@
-Now use the 3 answers you have provided above and summarize them to an Executive Summary (imagine the Chief Revenue Officer of Red Hat, Andrew Brown, is going to meet the CIO of $name and needs to have max 7 bullet points about what $name is about. Focus on the $name Objectives, but their link with IT/digital innovations. This is customer-facing (or partner-facing) and should be created with, and shared with, the customer (or partner) to verify our understanding of their business. Focus on the customer's perspective and their business, not Red Hat's.
-Here are questions that should be covered in this executive summary:
-What are the customer's top business objectives?
-What are the top challenges that put the customer's ability to achieve their business objectives at risk?
-What are the key factors influencing the customer's business (e.g., market, industry, competition, economic situation)?
-

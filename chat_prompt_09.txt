@@ -1,1 +1,0 @@
-Create an overview of $name for a new member of the Red Hat account team. Start with a summary of $name business objectives and KPIs and set them in context of the $industry industry. This should be followed by explaining what are Red Hat's initiatives with $name and how they support their goals and concluding what are the overall account ambitions of Red Hat with $name

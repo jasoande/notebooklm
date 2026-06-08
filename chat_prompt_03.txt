@@ -1,8 +1,0 @@
-Now answer these questions using the information about $name and about the next horizons of its industry (the limit is again 1 A4, needs to be structured etc.): This section focuses on a deeper dive into the factors influencing the $name's environment, including their industry, market conditions, competition, and more. Please address the following questions:
-What services or products do they provide to the market?
-What is their business model (how do they generate revenue and achieve their objectives)?
-How do they differentiate themselves from the competition (is technology a differentiator)?
-Who are the customer's main competitors, and what is the customer's market position?
-What trends are impacting the customer's industry?
-What economic, political, or regulatory trends are affecting the customer's business?
-
