@@ -859,11 +859,10 @@ def main():
 
     # Load clients and prompts
     clients = [c.split('.')[-1].strip() if '.' in c else c.strip() for c in getattr(config, "clients", [])]
-    # Match new prompt naming: ask_*.txt and chat_*.txt
-    # Load prompt files from parent directory (notebooklm/)
-    # Use ask_prompt_*.txt and chat_prompt_*.txt (not chat_*.txt which includes old naming)
-    prompt_files = list(Path(PROJECT_ROOT).glob("ask_prompt_*.txt")) + \
-                   list(Path(PROJECT_ROOT).glob("chat_prompt_*.txt"))
+    # Load prompt files from SCRIPT_DIR (notebooklm/)
+    # Match actual prompt naming: ask_*.txt and chat_*.txt
+    prompt_files = list(SCRIPT_DIR.glob("ask_*.txt")) + \
+                   list(SCRIPT_DIR.glob("chat_*.txt"))
 
     if not clients or not prompt_files:
         print("Error: No clients or prompts configured", file=sys.stderr)

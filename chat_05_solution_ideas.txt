@@ -113,7 +113,7 @@ Rank ideas by:
 
 ## DELIVERABLE
 
-Create 8 ideas following the template above.
+Create a note titled "$name ideas for opportunities" containing 8 ideas following the template above.
 
 WORD LIMIT: 200-250 words per idea (1,600-2,000 words total)
 

@@ -27,6 +27,11 @@
 # Examples: "senior account solutions architect", "account executive", "solutions consultant"
 persona = "senior account solutions architect"
 
+# Vendor/Company name for all prompts (used as $vendor in prompt templates)
+# This makes prompts reusable for any company - not just Red Hat
+# Examples: "Red Hat", "Acme Solutions", "Global Tech Corp"
+vendor = "Red Hat"
+
 # Email address for completion notifications
 # UPDATE THIS with your actual email address
 notification_email = "your.email@company.com"
