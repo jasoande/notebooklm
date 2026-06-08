@@ -1,0 +1,128 @@
+# METADATA
+# ID: solution_ideas
+# TYPE: chat
+# DEPENDENCIES: value_propositions
+# TIMEOUT: 360
+# VALIDATION: min_words=1200, max_words=2000
+# QUALITY_THRESHOLD: 7.0
+
+PRIOR CONTEXT - Reference these notes:
+- "Business Objectives"
+- "Value Propositions"
+- "Technology Partners"
+
+Brainstorm 8 high-impact Red Hat solutions for $name, prioritizing quick wins + strategic investments.
+
+---
+
+## IDEA TEMPLATE
+
+For each idea, provide:
+
+**Idea #X: [One-sentence description of what we'd build/deploy]**
+
+**Objective Alignment:**
+- Which $name business objective(s) does this address? (Reference specific objectives from "Business Objectives" note)
+
+**Success Metric:**
+- How would $name measure impact?
+- Must be quantifiable: cost savings, time reduction, revenue increase, risk mitigation metric
+
+**Red Hat Technology Stack:**
+- Specific products and versions
+- Example: "Red Hat OpenShift 4.15 + Ansible Automation Platform 2.4 + Red Hat Advanced Cluster Security"
+
+**Implementation Partner:**
+- Recommended systems integrator or consulting partner with relevant experience
+- Why this partner? (industry expertise, geographic presence, Red Hat partnership tier)
+
+**Feasibility & Timeline:**
+- **Quick Win (<6 months):** Proof of value in one quarter or less
+- **Strategic (6-18 months):** Significant transformation, multi-phase rollout
+- **Transformational (18+ months):** Enterprise-wide modernization, cultural change required
+
+**Estimated Value:**
+- Financial: "$X in annual savings" or "Y% cost reduction"
+- Operational: "Z% time savings" or "W fewer manual hours/month"
+- Risk: "Compliance with [regulation]" or "X% reduction in security incidents"
+
+**Prerequisites:**
+- What must be true for this to succeed? (executive sponsorship, budget approval, technical readiness, organizational change)
+
+---
+
+## DIVERSITY REQUIREMENTS
+
+Your 8 ideas must include:
+- **At least 2 Quick Wins** (<6 months): Build early credibility and demonstrate ROI
+- **At least 1 AI/ML use case** (using Red Hat AI or OpenShift AI): Show innovation leadership
+- **At least 1 security/compliance idea** (if regulatory pressure exists in $industry): Address risk
+- **At least 1 edge/IoT idea** (if relevant to $industry): Manufacturing, retail, healthcare, logistics
+- **No more than 3 ideas using the same primary Red Hat product**: Demonstrate portfolio breadth
+
+---
+
+## PRIORITIZATION LOGIC
+
+Rank ideas by:
+1. **ROI Timeline:** Quick wins first, then strategic investments
+2. **Objective Criticality:** Solutions addressing #1 business objective rank higher
+3. **Proven Success:** Red Hat has case studies in same industry
+4. **Competitive Displacement:** Opportunity to replace incumbent vendor and consolidate spend
+
+---
+
+## EXAMPLE IDEA
+
+**Idea #1: Automate RHEL patching and compliance reporting across 1,200 production servers**
+
+**Objective Alignment:**
+- "Reduce IT operational costs by $5M annually" (Business Objective #2)
+- "Achieve SOX compliance with 100% audit pass rate" (Business Objective #3)
+
+**Success Metric:**
+- Reduce monthly patching time from 40 hours to 4 hours (90% reduction)
+- Achieve 100% compliance reporting automation (currently 60% manual)
+- Zero unplanned downtime due to patching errors (currently 2-3 incidents/year)
+
+**Red Hat Technology Stack:**
+- Red Hat Ansible Automation Platform 2.4 (Automation Controller + Automation Hub)
+- Red Hat Satellite 6.15 for patch management and content distribution
+- Red Hat Insights for predictive analytics and drift detection
+
+**Implementation Partner:**
+- Accenture Federal Services (AFC): Red Hat Premier Partner with proven track record in large-scale RHEL automation for $industry customers. AFC implemented similar solution for [Comparable Company] with 3,000+ servers.
+
+**Feasibility & Timeline:**
+- **Quick Win (<6 months)**
+  * Phase 1 (Months 1-2): Pilot with 100 dev/test servers
+  * Phase 2 (Months 3-4): Expand to 500 non-critical production servers
+  * Phase 3 (Months 5-6): Full production rollout across 1,200 servers
+
+**Estimated Value:**
+- **Financial:** $180K annual savings (45 hours/month @ $150/hr blended rate × 12 months)
+- **Operational:** Free up 2 FTEs currently dedicated to manual patching, redeploy to cloud migration project
+- **Risk:** Eliminate compliance violations ($50K-$200K potential fines), avoid downtime costs ($500K per incident)
+
+**Prerequisites:**
+- CIO approval and budget allocation ($250K for Ansible + Satellite subscriptions, $150K for implementation services)
+- Infrastructure team trained on Ansible best practices (3-day Red Hat training for 5 engineers)
+- Change management process updated to allow automated patching in maintenance windows
+
+---
+
+## DELIVERABLE
+
+Create 8 ideas following the template above.
+
+WORD LIMIT: 200-250 words per idea (1,600-2,000 words total)
+
+QUALITY CHECKLIST:
+- [ ] Each idea addresses at least 1 business objective
+- [ ] Success metrics are specific and measurable (not "improve efficiency")
+- [ ] Technology stack includes version numbers and integration points
+- [ ] Partner recommendation includes justification (not random name)
+- [ ] Estimated value is quantified with calculation methodology
+- [ ] Feasibility timeline is realistic based on enterprise change velocity
+- [ ] Ideas span quick wins, strategic, and transformational timelines
+- [ ] Portfolio diversity: multiple Red Hat products represented

@@ -1,0 +1,124 @@
+# METADATA
+# ID: value_propositions
+# TYPE: chat
+# DEPENDENCIES: business_objectives, market_competitive, tech_partners
+# TIMEOUT: 360
+# VALIDATION: min_words=800, max_words=1500, min_citations=2
+# QUALITY_THRESHOLD: 7.5
+
+PRIOR CONTEXT - Reference these notes:
+- "Business Objectives"
+- "Market & Competitive Analysis"
+- "Technology Partners"
+
+Create Red Hat value propositions for $name's top business objectives.
+
+---
+
+## INSTRUCTIONS
+
+For each of $name's top 3-5 business objectives (from "Business Objectives" note), create a value statement using the Issue/Action/Value framework.
+
+Prioritize objectives with:
+1. Largest financial impact or C-suite visibility
+2. Clear IT dependency
+3. Red Hat solution applicability
+
+---
+
+## VALUE STATEMENT TEMPLATE
+
+### **Objective: [Copy objective name from Business Objectives note]**
+
+**ISSUE (Customer Language):**
+What specific business problem prevents $name from achieving this objective?
+- Use quantified impact where possible: "$X revenue at risk," "Y% cost increase," "Z-month delay to market"
+- Quote $name's own language from earnings calls, annual reports, or press releases when available
+- Frame from customer perspective, not Red Hat's sales perspective
+
+**RED HAT ACTION (Differentiated):**
+How do Red Hat solutions uniquely address this issue?
+- Name specific products: Red Hat Enterprise Linux (RHEL), OpenShift, Ansible Automation Platform, Red Hat Advanced Cluster Security, Red Hat AI
+- Highlight differentiation vs. competitors
+  * Example: "Unlike proprietary Kubernetes distributions with vendor lock-in, OpenShift provides..."
+  * Example: "While traditional infrastructure automation tools require agents on every system, Ansible's agentless architecture..."
+- Include technical specifics: integration points, deployment models, support for hybrid/multi-cloud
+- Reference Red Hat's open source foundation and community innovation
+
+**MEASURABLE VALUE:**
+What quantified outcomes can $name expect?
+
+**Financial Value:**
+- Cost savings: TCO reduction, license consolidation, operational efficiency
+- Revenue impact: faster time to market, new revenue streams, customer retention
+- Risk reduction: compliance, security, downtime avoidance
+
+**Operational Value:**
+- Time metrics: deployment speed (weeks → days), incident response time, patch cycles
+- Automation percentage: manual processes eliminated
+- Resource efficiency: fewer FTEs required, cloud cost optimization
+
+**Strategic Value:**
+- Competitive advantage: capabilities competitors lack
+- Future-proofing: avoid vendor lock-in, hybrid cloud flexibility
+- Innovation velocity: faster experimentation, DevOps maturity
+
+**Proof Points:**
+- Customer case studies from same industry (if available)
+  * Example: "Retail company X achieved 25% cloud cost reduction with OpenShift in 18 months"
+- Industry benchmarks or analyst reports
+- Red Hat customer success metrics
+
+---
+
+## EXAMPLE VALUE STATEMENT
+
+### **Objective: Reduce cloud infrastructure costs by 20% while scaling e-commerce platform to handle 3x traffic**
+
+**ISSUE (Customer Language):**
+$name's AWS bill is projected to reach $50M annually by 2026 due to inefficient container sprawl, lack of multi-cloud workload portability, and manual scaling processes. Current architecture requires over-provisioning to handle peak traffic, resulting in 40% average resource waste. [Source: $name Q3 2024 Earnings Call - CFO comments on rising cloud costs]
+
+**RED HAT ACTION (Differentiated):**
+Red Hat OpenShift provides enterprise Kubernetes with built-in cost governance, automated bin packing, and consistent operations across AWS, Azure, and on-premises infrastructure. Unlike AWS EKS, OpenShift eliminates vendor lock-in by supporting workload portability to the lowest-cost infrastructure based on real-time demand.
+
+Ansible Automation Platform automates cloud resource provisioning, rightsizing, and decommissioning based on actual usage patterns, integrated with OpenShift cluster management. This replaces manual CloudFormation scripting and reduces human error in resource allocation.
+
+Red Hat's subscription model includes 24/7 global support, certified integrations with AWS services, and access to the OpenShift Commons community for shared best practices.
+
+**MEASURABLE VALUE:**
+
+*Financial Value:*
+- 15-25% cloud spend reduction within 12 months through automated resource optimization [Benchmark: Financial services customer achieved 22% savings in 14 months]
+- Avoid $8-12M in projected AWS cost overruns by 2026
+- Consolidate tooling: replace 3-4 point solutions (monitoring, security, CI/CD) with OpenShift built-in capabilities, saving $500K+ annually in licenses
+
+*Operational Value:*
+- 3x faster deployment cadence: application releases from 2 weeks to 2 days
+- 60% reduction in manual infrastructure management time, freeing 4-5 FTEs for innovation projects
+- 80% automated scaling based on traffic patterns, eliminating need for manual weekend deployments
+
+*Strategic Value:*
+- Zero switching costs for future cloud migrations: proven workload portability across AWS, Azure, Google Cloud, and on-prem
+- Foundation for hybrid cloud strategy: run identical workloads in public cloud or private datacenter based on cost, compliance, and performance needs
+- Accelerate AI/ML initiatives: OpenShift AI provides integrated platform for model training and inference without vendor lock-in to AWS SageMaker
+
+**Proof Points:**
+- Global retailer (similar e-commerce traffic profile) reduced cloud costs by 28% within 18 months using OpenShift [Red Hat case study]
+- Gartner positions Red Hat as Leader in Container Management for fourth consecutive year
+- 95% of Fortune 500 use Red Hat technologies
+
+---
+
+## DELIVERABLE
+
+Create 3-5 value statements (one per objective) following the template above.
+
+WORD LIMIT: 250-300 words per value statement (1,200 words total max)
+
+QUALITY CHECKLIST:
+- [ ] Issue quantifies business impact in customer's terms
+- [ ] Action names specific Red Hat products (not generic "Red Hat solutions")
+- [ ] Action highlights competitive differentiation (vs. AWS, VMware, proprietary tools)
+- [ ] Value includes at least 2 quantified metrics (financial + operational)
+- [ ] Proof points cite real case studies or analyst reports (not hypothetical)
+- [ ] No vague phrases like "improve efficiency" or "enhance productivity" without metrics

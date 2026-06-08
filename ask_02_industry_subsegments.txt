@@ -1,0 +1,86 @@
+# METADATA
+# ID: industry_subsegments
+# TYPE: ask (research)
+# DEPENDENCIES: foundation_research
+# TIMEOUT: 360
+# RETRIES: 3
+# VALIDATION: min_words=400, max_words=700
+# QUALITY_THRESHOLD: 7.0
+
+You are an industry taxonomy specialist. Based on your research of $name (refer to prior note: "Foundation Research"), identify the precise industry subsegments relevant to this account.
+
+CONTEXT:
+- $name operates in: $industry
+- Use the company's own business unit structure as a starting point
+- Cross-reference with authoritative frameworks:
+  * IBISWorld NAICS codes
+  * Gartner industry taxonomies
+  * McKinsey sector reports
+  * Industry-specific associations or regulatory bodies
+
+DELIVERABLE:
+Create a table with these columns:
+
+| Subsegment | Description | Relevance to $name | Digital Maturity (1-5) | Revenue Exposure |
+|------------|-------------|-------------------|------------------------|------------------|
+| ... | ... | ... | ... | ... |
+
+INSTRUCTIONS:
+
+1. **Subsegment Identification (5-8 subsegments total)**
+   - Focus on subsegments where $name has meaningful operations or revenue
+   - Include both traditional and emerging/digital-first categories
+   - Avoid overly granular breakdowns (stick to major commercial divisions)
+
+2. **Description (1-2 sentences per subsegment)**
+   - Explain the subsegment's scope and business model
+   - Clarify its role in the broader industry value chain
+
+3. **Relevance to $name (High/Medium/Low)**
+   - HIGH: Core business, >20% revenue contribution
+   - MEDIUM: Secondary business, 5-20% revenue
+   - LOW: Tangential or emerging, <5% revenue
+   - Cite evidence from financial disclosures or business segment breakdowns
+
+4. **Digital Maturity (1-5 scale)**
+   - 1 = Traditional, minimal technology adoption
+   - 2 = Early digitization (basic automation, legacy systems)
+   - 3 = Moderate adoption (cloud migration underway, some modern platforms)
+   - 4 = Advanced (containerization, DevOps, data-driven)
+   - 5 = Digital-native (AI/ML, real-time systems, API-first architecture)
+
+5. **Revenue Exposure (percentage or descriptor)**
+   - Use $name's disclosed segment revenue if available
+   - Otherwise estimate: Primary (>50%), Significant (20-50%), Secondary (5-20%), Minimal (<5%)
+
+SPECIAL CATEGORIES:
+
+**Emerging Subsegments** (separate section)
+List 2-3 emerging areas that are:
+- Currently small but growing rapidly in the industry
+- Relevant to $name's future strategy or competitive positioning
+- Example: "Direct-to-consumer digital channels" in traditionally B2B industries
+
+**Regulatory & Governance Bodies** (separate section)
+- List industry regulators (FDA, SEC, FCC, etc.) if relevant to $name's operations
+- Note any self-regulatory associations or voluntary compliance frameworks
+- Explain their impact on technology decisions (compliance requirements, data governance)
+
+PRIORITIZATION:
+Focus on subsegments with the highest combined score of:
+1. Revenue relevance to $name
+2. Digital transformation opportunity (higher maturity = more IT spending)
+3. Red Hat solution applicability
+
+EXAMPLE ROW:
+| Cloud-native Enterprise SaaS | B2B software platforms delivered via cloud with subscription pricing | High - 40% of revenue | 4 - Advanced containerization and microservices | Primary (45%) |
+
+OUTPUT:
+- Table format as specified above
+- Total word count: 400-600 words including descriptions
+- Cite sources for revenue breakdowns: [Source: "$name Annual Report FY2024"]
+
+QUALITY CHECK:
+- Are all subsegments distinct (no overlap)?
+- Have you avoided generic categories like "Technology" or "Services"?
+- Does the total revenue exposure add up to approximately 100%?

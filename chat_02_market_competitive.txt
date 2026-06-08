@@ -1,0 +1,135 @@
+# METADATA
+# ID: market_competitive
+# TYPE: chat
+# DEPENDENCIES: foundation_research, business_objectives
+# TIMEOUT: 300
+# VALIDATION: min_words=400, max_words=600
+# QUALITY_THRESHOLD: 7.0
+
+PRIOR CONTEXT - Reference these notes:
+- "Foundation Research"
+- "Industry Subsegments"
+- "Business Objectives"
+
+Building on prior research, analyze $name's competitive positioning and market forces.
+
+---
+
+## SECTION 1: Products and Services
+
+**What does $name provide to the market?**
+- Core products/services with brief descriptions
+- Customer segments served (B2B, B2C, B2B2C)
+- Delivery model: physical products, software/SaaS, services, hybrid
+
+**Business Model:**
+- How does $name generate revenue? (Product sales, subscriptions, licensing, transaction fees, advertising, etc.)
+- Pricing model and customer contract structure (if known)
+- Recent business model shifts: digital channels, recurring revenue, platform plays
+
+---
+
+## SECTION 2: Competitive Landscape
+
+**Top 3 Competitors:**
+
+1. **[Competitor Name]**
+   - Market share or relative size vs. $name
+   - Key differentiators (cost, features, geography, customer segment)
+   - Technology strategy (if known): cloud-native, legacy modernization, AI adoption
+
+2. **[Competitor Name]**
+   [Repeat structure]
+
+3. **[Competitor Name]**
+   [Repeat structure]
+
+**$name's Competitive Advantages:**
+- What makes $name different from competitors?
+- Is technology a differentiator? (Yes/No + evidence)
+  * If YES: How? (Superior digital experience, automation, data analytics, speed to market)
+  * If NO: What differentiates them? (Brand, relationships, price, geographic reach)
+- Cite specific examples: patents, proprietary platforms, customer testimonials
+
+**Market Position:**
+- Market leader / Strong challenger / Niche player / Emerging disruptor
+- Market share (if disclosed or estimated by analysts)
+- Position trajectory: gaining / maintaining / losing ground
+
+---
+
+## SECTION 3: Market Dynamics (Next 3 Years)
+
+**Industry Growth:**
+- Industry CAGR forecast with source [e.g., "Gartner projects 8.5% CAGR 2024-2027"]
+- Growth drivers: new markets, regulatory mandates, technology adoption, consumer behavior shifts
+
+**Disruptive Forces:**
+- New entrants or business model threats (e.g., direct-to-consumer digital players disrupting traditional channels)
+- Technology disruption: AI, automation, blockchain, IoT
+- Consolidation trends: M&A activity in the industry
+
+**Industry Trends Impacting $name:**
+- Regulatory changes: new compliance requirements, data privacy laws, trade policies
+- Economic factors: interest rates, inflation, currency fluctuations, recession risk
+- Social/demographic shifts: remote work, sustainability expectations, generational preferences
+- Technology trends: cloud adoption rates, open source movement, edge computing
+
+---
+
+## SECTION 4: Technology Adoption Maturity
+
+**Where does $name fall on the innovation adoption curve?**
+
+Choose ONE and provide justification:
+
+- [ ] **Laggard:** Last to adopt new technologies, highly risk-averse, traditional IT approaches
+- [ ] **Late Majority:** Skeptical of change, adopts only after proven ROI and widespread industry acceptance
+- [ ] **Early Majority:** Adopts innovations ahead of average, but requires pilot validation and business case
+- [ ] **Early Adopter:** Comfortable with emerging technology, willing to experiment, seeks competitive advantage through IT
+- [ ] **Innovator:** Bleeding edge, first-mover mentality, technology as core to business strategy
+
+**Justification (3-4 sentences with evidence):**
+- Cite specific examples:
+  * Cloud migration timeline (early vs. late in industry)
+  * AI/ML pilot programs or production deployments
+  * Automation and DevOps maturity
+  * Open source contributions or adoption announcements
+  * Technology conference keynotes or thought leadership
+
+Example:
+"$name demonstrates Early Adopter characteristics. They migrated 60% of workloads to AWS by 2022, ahead of industry average [Source: Company IT blog]. CEO mentioned 'AI-first strategy' in Q2 2024 earnings call. Job postings show hiring for Kubernetes engineers and MLOps specialists, indicating investment in modern infrastructure."
+
+---
+
+## SECTION 5: Economic and Political Risk Factors
+
+**Geographic Exposure:**
+- Revenue mix by region: North America (X%), Europe (Y%), Asia-Pacific (Z%)
+- Currency exposure and hedging strategy
+- Trade policy impacts: tariffs, export controls, sanctions
+
+**Supply Chain Dependencies:**
+- Critical suppliers or partners (geographic concentration)
+- Logistics vulnerabilities
+- Nearshoring or reshoring initiatives
+
+**Regulatory Environment:**
+- Compliance obligations specific to $industry (FDA, GDPR, SOX, HIPAA, etc.)
+- Upcoming regulatory deadlines or new mandates
+- Litigation risks or ongoing legal challenges
+
+---
+
+WORD LIMIT: 500 words total
+
+EVIDENCE STANDARD:
+- Quantify where possible (market share %, CAGR, revenue mix)
+- Cite sources for competitive intelligence
+- If competitor data is unavailable, state: "Limited public information"
+
+QUALITY CHECKLIST:
+- [ ] Competitive landscape is specific (not "they face competition")
+- [ ] Technology adoption rating is evidence-based
+- [ ] Market dynamics are industry-specific, not generic trends
+- [ ] Risk factors are material to $name's business

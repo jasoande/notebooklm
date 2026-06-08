@@ -1,0 +1,194 @@
+# METADATA
+# ID: team_onboarding
+# TYPE: chat
+# DEPENDENCIES: all
+# TIMEOUT: 300
+# VALIDATION: min_words=700, max_words=1100
+# QUALITY_THRESHOLD: 7.5
+
+PRIOR CONTEXT - Reference ALL prior notes:
+- Foundation Research
+- Industry Subsegments
+- Business Objectives
+- Market & Competitive Analysis
+- Technology Partners
+- Value Propositions
+- Solution Ideas
+- HMW Statements
+
+Create a 2-page onboarding brief for a new Red Hat account team member joining the $name account.
+
+---
+
+## AUDIENCE & PURPOSE
+
+**Audience:** Technical sales specialist (Solutions Architect level)
+
+**Purpose:** Ramp new team member to productivity in 1 week
+
+**Use Case:** Internal Red Hat document (not customer-facing)
+
+---
+
+## PAGE 1: CUSTOMER INTELLIGENCE
+
+### **Section 1: Company Quick Facts**
+
+**Industry & Business Model:**
+- Industry: $industry
+- Annual revenue: [amount]
+- Employees: [count]
+- Headquarters: [location]
+- Ownership: Public / Private / PE-owned
+- Primary revenue streams: [product sales, subscriptions, services, etc.]
+
+**Geographic Footprint:**
+- Key markets: North America (X%), Europe (Y%), Asia-Pacific (Z%)
+- Revenue distribution by region
+- Data residency or compliance requirements
+
+**Market Position:**
+- Market share or ranking in industry
+- Competitive position: Leader / Strong Challenger / Niche Player
+- Recent M&A or strategic shifts
+
+---
+
+### **Section 2: Strategic Priorities (Next 12-24 Months)**
+
+**Top 3 Business Objectives:**
+1. [Objective 1 - one sentence with quantified target]
+   - IT Dependency: [How technology enables this]
+2. [Objective 2 - one sentence]
+   - IT Dependency: [How technology enables this]
+3. [Objective 3 - one sentence]
+   - IT Dependency: [How technology enables this]
+
+**Critical Challenges:**
+- [Challenge #1: Description + impact if unresolved]
+- [Challenge #2: Description + impact if unresolved]
+
+**Technology Maturity:**
+- Adoption Posture: [Laggard / Late Majority / Early Majority / Early Adopter / Innovator]
+- Evidence: [1-2 sentences with specific examples]
+
+---
+
+### **Section 3: Our Red Hat Footprint at $name**
+
+**Current Products Deployed:**
+- [List any existing Red Hat products: RHEL, OpenShift, Ansible, etc.]
+- [If none deployed yet: "Greenfield opportunity - no current Red Hat footprint"]
+
+**Contract Value & Dates:**
+- Annual Contract Value (ACV): $[amount] (if applicable)
+- Renewal dates: [Q1 2025, Q3 2026, etc.]
+- Subscription SKUs: [RHEL subscriptions, OpenShift nodes, Ansible automation units]
+
+**Key Customer Contacts:**
+| Name | Title | Role | Red Hat Relationship |
+|------|-------|------|---------------------|
+| [Name] | CIO | Decision maker | Strong - met at Red Hat Summit |
+| [Name] | VP Infrastructure | Technical champion | Moderate - evaluating OpenShift |
+| [Name] | Director DevOps | Influencer | Weak - new to role |
+
+**Competitive Landscape:**
+- **Incumbent Vendors:** [List key competitors: VMware, AWS, Puppet, etc.]
+- **Red Hat Position:** [Where we're winning, where we're competing, where we're whitespace]
+- **Switching Triggers:** [What would drive $name to change vendors: cost, functionality, support, consolidation]
+
+---
+
+## PAGE 2: ACCOUNT STRATEGY
+
+### **Section 4: Opportunity Pipeline**
+
+**Active Deals (Next 6 Months):**
+1. **[Deal Name]:** [Product/solution]
+   - Value: $[amount]
+   - Close Date: [Q2 2025]
+   - Stage: [Discovery / Proof of Concept / Negotiation]
+   - Blockers: [Budget approval pending, competing with AWS]
+
+2. **[Deal Name]:** [Product/solution]
+   - Value: $[amount]
+   - Close Date: [Q3 2025]
+   - Stage: [Technical validation]
+
+**Top 3 Expansion Opportunities:**
+From "Solution Ideas" and "HMW Statements" notes, list the highest-priority opportunities:
+
+1. **[Opportunity #1]:** [One-sentence description]
+   - Objective Alignment: [Which business objective]
+   - Red Hat Solution: [RHEL, OpenShift, Ansible, etc.]
+   - Estimated Value: $[amount] annual or [X% improvement]
+   - Timeline: Quick Win (<6mo) / Strategic (6-18mo)
+
+2. **[Opportunity #2]:** [Description]
+   [Same structure]
+
+3. **[Opportunity #3]:** [Description]
+   [Same structure]
+
+**Whitespace Areas:**
+- Technology domains where Red Hat has no presence but could add value
+- Example: "No automation platform deployed - manual DevOps processes create bottleneck"
+
+---
+
+### **Section 5: Execution Playbook**
+
+**Account Team Roles:**
+- **Account Executive:** [Name] - owns relationship, commercial negotiations
+- **Solutions Architect (YOU):** [Your role] - technical validation, proof of concepts
+- **Customer Success Manager:** [Name] - post-sale adoption, renewal health
+- **Specialists:** [e.g., Ansible specialist, OpenShift specialist for deep dives]
+
+**Next 90-Day Priorities:**
+1. **[Priority #1]:** [Action item with owner and deadline]
+   - Example: "Complete OpenShift POC for e-commerce platform - SA lead - Due March 15"
+2. **[Priority #2]:** [Action item]
+3. **[Priority #3]:** [Action item]
+
+**Partner Ecosystem:**
+- **Engaged Partners:** [Which SIs or consultancies are working with $name?]
+  * Example: "Accenture - implementing SAP S/4HANA migration, exploring RHEL on cloud"
+- **Recommended Partners:** [Which partners should we introduce for specific initiatives?]
+  * Example: "Introduce Red Hat partner XYZ for Ansible implementation - proven success in $industry"
+
+**Risks & Blockers:**
+- **Budget:** [Any known constraints: hiring freeze, CapEx limits, competing priorities]
+- **Competition:** [Active competitive threats: AWS RFP, VMware renewal negotiation]
+- **Organizational:** [Change resistance, leadership turnover, M&A distraction]
+- **Technical:** [Legacy system dependencies, skills gaps, integration complexity]
+
+---
+
+### **Section 6: Resources & Next Steps**
+
+**Where to Learn More:**
+- Account plan repository: [Link to Salesforce, SharePoint, or internal wiki]
+- Prior presentations and proposals: [Links]
+- Customer success stories in $industry: [Red Hat case studies to reference]
+
+**Your First Week Actions:**
+1. Review all prior notes in this NotebookLM workspace
+2. Schedule 1:1 with Account Executive to align on strategy
+3. Read $name's latest annual report and recent earnings call transcript
+4. Join next customer touchpoint: [Meeting scheduled for DATE]
+5. Complete Red Hat sales training for [relevant product: OpenShift, Ansible]
+
+---
+
+## DELIVERABLE SPECIFICATIONS
+
+**Format:** Markdown with headers and tables
+**Word Count:** 800-1,000 words (approximately 2 pages at 12pt font)
+**Tone:** Direct, actionable, insider knowledge - not marketing language
+
+QUALITY CHECKLIST:
+- [ ] Contains specific names, dates, and dollar values (not generic placeholders)
+- [ ] Opportunity pipeline includes close dates and deal stages
+- [ ] Risks are real and specific (not "may face budget constraints")
+- [ ] Next 90-day priorities are actionable with owners
+- [ ] Written for someone with zero prior knowledge of the account

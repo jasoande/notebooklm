@@ -1,0 +1,36 @@
+As a $persona, analyze ALL sources and research materials currently in this NotebookLM workspace to create a comprehensive professional technical account plan for $name.
+
+Create a note titled "Comprehensive Account Plan" that includes:
+
+**Executive Summary**
+- Strategic overview of $name in the $industry sector
+- Key business drivers and challenges
+- Technology landscape summary
+
+**Technical Infrastructure Assessment**
+- Current technology stack and architecture
+- Cloud adoption and hybrid strategies
+- Integration ecosystem
+- Data and analytics capabilities
+
+**Strategic Recommendations**
+- Modernization priorities
+- Scalability and performance optimization
+- Security and compliance requirements
+- Innovation opportunities
+
+**Risk & Opportunity Analysis**
+- Technical risks and mitigation strategies
+- Competitive positioning
+- Partner ecosystem assessment
+- Cost optimization opportunities
+
+**Action Plan**
+- Priority initiatives with business impact
+- Resource and skill requirements
+- Implementation timeline
+- Success metrics
+
+Base your analysis EXCLUSIVELY on sources available in this NotebookLM workspace. Provide specific, actionable insights that demonstrate deep technical understanding while remaining accessible to both technical and business stakeholders.
+
+Save this as a note titled "Comprehensive Account Plan" in NotebookLM.

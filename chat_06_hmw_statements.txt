@@ -1,0 +1,167 @@
+# METADATA
+# ID: hmw_statements
+# TYPE: chat
+# DEPENDENCIES: value_propositions, solution_ideas
+# TIMEOUT: 300
+# VALIDATION: min_words=1000, max_words=1800
+# QUALITY_THRESHOLD: 7.0
+
+PRIOR CONTEXT - Reference these notes:
+- "Business Objectives"
+- "Value Propositions"
+- "Solution Ideas"
+
+Generate 8 'How Might We' (HMW) design thinking statements to unlock Red Hat's value for $name.
+
+---
+
+## FOCUS AREAS
+
+Select 2-3 high-priority objectives from "Business Objectives" note. Focus HMW statements on objectives with:
+- Highest financial impact (revenue growth or cost reduction)
+- Clear technology dependency
+- C-suite visibility or strategic importance
+
+---
+
+## HMW TEMPLATE
+
+**HMW #X: [Question starting with "How might we..."]**
+
+**Objective Link:**
+- Which $name business objective(s) does this address?
+- If it addresses multiple objectives, list all
+
+**Concrete Action:**
+- Specific 90-day project with defined deliverables
+- Not a vague initiative - should be executable pilot or POC
+- Include scope: team size, timeline, budget range
+
+**Red Hat Technology:**
+- Primary Red Hat product(s)
+- Supporting tools or integrations
+
+**Quick Win or Strategic:**
+- QW (Quick Win <6mo): Demonstrates value in current fiscal year
+- ST (Strategic 6-18mo): Requires multi-phase rollout and organizational change
+
+**Success Criteria:**
+- How will we measure if the HMW solution worked?
+- Must be quantitative and observable
+
+---
+
+## QUALITY CRITERIA
+
+✅ **SPECIFIC:**
+- Good: "How might we reduce containerized app deployment time from 2 weeks to 2 days?"
+- Bad: "How might we improve efficiency?"
+
+✅ **MEASURABLE:**
+- Good: "How might we automate 80% of compliance reporting to reduce audit prep from 200 hours to 40 hours?"
+- Bad: "How might we make compliance easier?"
+
+✅ **ACTIONABLE:**
+- Good: "How might we migrate the customer portal API from monolithic WebSphere to OpenShift microservices to support 10x traffic growth?"
+- Bad: "How might we modernize our applications?"
+
+✅ **TIME-BOUND:**
+- Include baseline (current state) and target (desired state)
+- Specify measurable outcome
+
+---
+
+## DIVERSITY REQUIREMENTS
+
+Your 8 HMWs must include:
+- **At least 2 focused on cost reduction:** Direct operational savings or efficiency gains
+- **At least 2 focused on revenue growth:** Faster time to market, new digital channels, customer experience
+- **At least 1 focused on risk mitigation:** Security, compliance, resilience, downtime reduction
+- **At least 1 focused on innovation/competitive advantage:** AI/ML, edge computing, data-driven insights
+
+---
+
+## EXAMPLE HMW
+
+**HMW #1: How might we reduce RHEL patching time from 40 hours/month to 4 hours/month while maintaining 100% compliance?**
+
+**Objective Link:**
+- "Reduce IT operational costs by $5M annually" (Objective #2)
+- "Achieve SOX compliance with zero audit findings" (Objective #3)
+
+**Concrete Action:**
+- 90-Day Pilot: Deploy Ansible Automation Platform to automate patch management for 100 development servers
+- Team: 2 infrastructure engineers + 1 Red Hat consultant
+- Budget: $50K (Ansible licenses + consulting)
+- Deliverables:
+  * Automated playbooks for RHEL 8/9 patching
+  * Integration with Red Hat Satellite for patch content
+  * Compliance reporting dashboard showing patch status
+  * Runbook for production rollout
+
+**Red Hat Technology:**
+- Primary: Red Hat Ansible Automation Platform 2.4
+- Supporting: Red Hat Satellite 6.15, Red Hat Insights
+
+**Quick Win or Strategic:**
+- **QW (Quick Win):** ROI measurable in 4 months
+  * Time savings: 36 hours/month × $150/hr = $5,400/month = $64,800 annual
+  * Payback period: 3 months
+  * Success enables broader automation initiatives (strategic follow-on)
+
+**Success Criteria:**
+- Patch deployment time: ≤4 hours for 100 servers (baseline: 40 hours)
+- Zero failed patches requiring manual rollback
+- 100% compliance reporting automation (baseline: 60% manual effort)
+- Infrastructure team satisfaction score ≥8/10 on usability survey
+
+---
+
+**HMW #2: How might we enable the data science team to deploy ML models to production in days instead of months?**
+
+**Objective Link:**
+- "Accelerate AI-driven personalization to increase customer conversion by 15%" (Objective #1)
+
+**Concrete Action:**
+- 90-Day Pilot: Deploy OpenShift AI platform for model training and inference
+- Scope: Migrate 1 existing ML model (product recommendation engine) to OpenShift
+- Team: 3 data scientists + 1 MLOps engineer + 1 Red Hat AI specialist
+- Budget: $120K (OpenShift AI licenses + GPU nodes + implementation)
+- Deliverables:
+  * OpenShift AI cluster with Jupyter notebooks and model serving
+  * CI/CD pipeline for model versioning and deployment
+  * Inference API integrated with e-commerce frontend
+  * Monitoring dashboard for model performance and drift
+
+**Red Hat Technology:**
+- Primary: Red Hat OpenShift AI (formerly OpenShift Data Science)
+- Supporting: OpenShift Container Platform 4.15, OpenShift Pipelines (Tekton)
+
+**Quick Win or Strategic:**
+- **ST (Strategic 6-9 months):**
+  * 90-day pilot proves concept
+  * Months 4-6: Migrate 3 additional ML models
+  * Months 7-9: Full production rollout for all data science workflows
+
+**Success Criteria:**
+- Model deployment time: ≤3 days (baseline: 6-8 weeks)
+- Data scientist productivity: 5 model experiments/week (baseline: 1-2/month)
+- Production model uptime: ≥99.9%
+- Business impact: 15% increase in customer conversion measured via A/B testing
+
+---
+
+## DELIVERABLE
+
+Create 8 HMW statements following the template above.
+
+WORD LIMIT: 150-200 words per HMW (1,200-1,600 words total)
+
+QUALITY CHECKLIST:
+- [ ] Each HMW is specific with quantified baseline and target
+- [ ] Concrete actions are 90-day executable projects (not multi-year transformations)
+- [ ] Technology stack is specific (product names + versions)
+- [ ] Success criteria are measurable and observable
+- [ ] Mix of Quick Wins and Strategic initiatives
+- [ ] Diversity across cost reduction, revenue growth, and risk mitigation
+- [ ] No vague language ("improve," "enhance," "optimize" without metrics)

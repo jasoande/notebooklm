@@ -1,0 +1,154 @@
+# METADATA
+# ID: tech_partners
+# TYPE: chat
+# DEPENDENCIES: foundation_research, business_objectives
+# TIMEOUT: 300
+# VALIDATION: min_words=300, max_words=500
+# QUALITY_THRESHOLD: 6.5
+
+PRIOR CONTEXT - Reference these notes:
+- "Foundation Research"
+- "Business Objectives"
+
+Map $name's technology partner ecosystem, focusing on vendors relevant to Red Hat's portfolio.
+
+---
+
+## RESEARCH SCOPE
+
+Identify technology vendors and services partners in these categories. For each vendor, note:
+- **Relationship Depth:** Strategic / Tactical / Pilot / Legacy
+- **Lines of Business Impacted:** Which $name business units or functions use this technology
+- **Contract Status:** New partnership / Active renewal / Consolidation opportunity / Unknown
+
+Focus on the **top 10 most relevant vendors** across all categories.
+
+---
+
+## CATEGORY 1: Infrastructure & Cloud
+
+**Hyperscalers:**
+- AWS / Azure / Google Cloud: Which are in use? Multi-cloud or single-cloud strategy?
+- Cloud spending level (if disclosed)
+- Workload types: production apps, dev/test, data analytics, AI/ML
+
+**Data Center & Compute:**
+- Hardware vendors: Dell, HPE, Cisco, Lenovo
+- Virtualization: VMware vSphere, Red Hat Virtualization, Nutanix, Hyper-V
+- Storage: NetApp, Pure Storage, Dell EMC
+
+---
+
+## CATEGORY 2: Application Platforms & Middleware
+
+**Container & Orchestration:**
+- OpenShift (Red Hat) / Kubernetes (self-managed) / Rancher / Tanzu (VMware)
+- Container registry and image management
+- Serverless platforms
+
+**CI/CD & DevOps:**
+- Jenkins, GitLab, GitHub Actions, CircleCI, ArgoCD
+- Artifact repositories: JFrog, Nexus
+- Testing frameworks and automation
+
+**Application Servers & Middleware:**
+- Red Hat JBoss / WebSphere / WebLogic / Tomcat
+- Message queues: Kafka, RabbitMQ, ActiveMQ, IBM MQ
+- API management: MuleSoft, Apigee, Kong, Red Hat 3scale
+
+---
+
+## CATEGORY 3: Automation & Management
+
+**Configuration Management:**
+- Red Hat Ansible / Puppet / Chef / SaltStack / PowerShell DSC
+- Infrastructure as Code: Terraform, CloudFormation, ARM templates
+
+**AIOps & Observability:**
+- Monitoring: Dynatrace, Datadog, Splunk, New Relic, Prometheus/Grafana
+- Log aggregation: Splunk, ELK stack, Sumo Logic
+- APM: AppDynamics, New Relic, Dynatrace
+
+**IT Service Management:**
+- ServiceNow, BMC Remedy, Jira Service Management
+
+---
+
+## CATEGORY 4: Data & Analytics
+
+**Databases:**
+- Relational: Oracle, SQL Server, PostgreSQL, MySQL, Red Hat Database
+- NoSQL: MongoDB, Cassandra, Couchbase, Redis
+- Cloud-native: Aurora, CosmosDB, Cloud SQL
+
+**Data Platforms:**
+- Data lakes: Databricks, Snowflake, AWS S3/Redshift, Azure Data Lake
+- ETL/ELT: Informatica, Talend, Apache Airflow
+- Streaming: Kafka, Kinesis, Flink
+
+---
+
+## CATEGORY 5: Security & Compliance
+
+**Security Tools:**
+- Endpoint protection, SIEM, vulnerability scanning
+- Identity and access management: Okta, Ping, Active Directory
+- Container security: Aqua, Twistlock, Red Hat Advanced Cluster Security
+
+**Compliance & GRC:**
+- Governance, risk, compliance platforms
+- Audit and reporting tools
+
+---
+
+## CATEGORY 6: Strategic Services Partners
+
+**Global Systems Integrators:**
+- Accenture, Deloitte, IBM, PwC, Capgemini, etc.
+- Which partners are engaged? For what initiatives? (Cloud migration, ERP implementation, digital transformation)
+
+**Regional/Specialized Partners:**
+- Smaller consultancies or boutique firms
+- Technology-specific partners (e.g., Kubernetes specialists, data engineering firms)
+
+---
+
+## RED HAT IMPLICATIONS
+
+Based on the vendor landscape identified above:
+
+**Complementary Partners (Co-sell Opportunities):**
+- Which vendors have complementary solutions to Red Hat?
+- Example: AWS + Red Hat OpenShift, ServiceNow + Ansible Automation Platform
+- Existing joint customer success stories?
+
+**Competitive Overlaps (Displacement Opportunities):**
+- Where does Red Hat compete directly with incumbent vendors?
+- Example: Ansible vs. Puppet/Chef, OpenShift vs. VMware Tanzu
+- What would trigger a switching decision? (licensing costs, vendor consolidation, functionality gaps)
+
+**Whitespace (Gaps Red Hat Could Fill):**
+- Technology areas where $name has no clear vendor
+- Emerging needs based on business objectives
+- Example: If $name has objectives around automation but no config management tool deployed
+
+---
+
+WORD LIMIT: 400 words (focus on top 10 vendors with most detail)
+
+EVIDENCE SOURCES:
+- Job postings (indicate required skills/tools)
+- Conference presentations or case studies featuring $name
+- Press releases about technology partnerships
+- LinkedIn profiles of $name IT staff showing certifications
+- Public RFPs or procurement documents
+
+IF UNKNOWN:
+- State "Not publicly disclosed - recommend discovery conversations with $name IT leadership"
+- Avoid guessing based on industry norms
+
+QUALITY CHECKLIST:
+- [ ] Focused on top 10 vendors (not exhaustive list of 50+)
+- [ ] Relationship depth categorized (Strategic vs. Tactical vs. Pilot)
+- [ ] Red Hat competitive positioning clear
+- [ ] Evidence-based (not "likely uses AWS")

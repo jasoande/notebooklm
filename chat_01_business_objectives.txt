@@ -1,0 +1,98 @@
+# METADATA
+# ID: business_objectives
+# TYPE: chat
+# DEPENDENCIES: foundation_research, industry_subsegments
+# TIMEOUT: 300
+# RETRIES: 3
+# VALIDATION: min_words=400, max_words=700, min_citations=3
+# QUALITY_THRESHOLD: 7.0
+# EXPECTED_SECTIONS: Executive Summary, Top 3 Business Objectives, Top Business Challenges
+
+PRIOR CONTEXT - Reference these notes:
+- "Foundation Research" (company financial, leadership, initiatives)
+- "Industry Subsegments" (market taxonomy and $name's positioning)
+
+Acting as Red Hat Senior Account Executive for $name, synthesize their strategic priorities for internal account planning.
+
+---
+
+## EXECUTIVE SUMMARY (7 bullets max)
+
+Create a CXO-ready briefing for Red Hat's Chief Revenue Officer meeting with $name's CIO. This summary will be shared with extended Red Hat teams and partners collaborating on $name business.
+
+1. **Company Snapshot:** [Industry, revenue scale, market position in 1 sentence]
+2. **Strategic Objective #1:** [Top priority + IT dependency]
+3. **Strategic Objective #2:** [Second priority + IT dependency]
+4. **Strategic Objective #3:** [Third priority + IT dependency - if applicable]
+5. **Critical Challenge:** [Biggest risk to achieving objectives]
+6. **Technology Maturity:** [Adoption posture: Laggard/Late Majority/Early Majority/Early Adopter/Innovator]
+7. **Competitive Positioning:** [How they differentiate, role of technology]
+
+---
+
+## SECTION 1: Top 3 Business Objectives (Next 12-24 Months)
+
+For each objective, use this structure:
+
+**Objective 1:**
+- **Goal:** [One sentence: What are they trying to achieve? Use quantified targets if disclosed]
+- **Business Impact:** [Revenue growth / Cost reduction / Risk mitigation / Market expansion / Customer experience]
+- **Supporting Initiatives:** [2-3 specific programs or projects]
+- **IT/Digital Role:** [How technology enables this objective - infrastructure, automation, data analytics, AI, etc.]
+- **Funding Model:** [CapEx / OpEx / Cloud spending / Budget size if known]
+- **Decision Authority:** [Who approves: CIO, CFO, Business unit leaders]
+- **Evidence:** [Cite source: earnings call, annual report, press release]
+
+**Objective 2:**
+[Repeat structure]
+
+**Objective 3:**
+[Repeat structure]
+
+---
+
+## SECTION 2: Top Business Challenges (Next 3 Years)
+
+Identify 2-3 critical challenges that could prevent $name from achieving their objectives:
+
+**Challenge 1:**
+- **Description:** [What is the challenge from $name's perspective?]
+- **Potential Impact:** [What happens if unresolved? Revenue loss, market share erosion, compliance risk, etc.]
+- **IT's Role in Addressing:** [How technology can mitigate this challenge]
+- **Current Status:** [Are they actively addressing it? Pilot phase? Production deployment?]
+
+**Challenge 2:**
+[Repeat structure]
+
+---
+
+## SECTION 3: IT Resource Landscape
+
+**Headcount Trends:**
+- IT team size (if disclosed)
+- Hiring trends: expanding, stable, or reducing IT staff?
+- Geographic distribution of IT resources
+
+**Skills Gaps:**
+- Areas where $name needs capabilities: Cloud architecture / Kubernetes / Automation / AI-ML / Security / DevOps
+- Evidence: job postings, conference presentations, partner announcements
+
+**Partner Dependency:**
+- Reliance on systems integrators or consultants
+- Build vs. buy preference
+- Internal innovation culture vs. vendor-led approach
+
+---
+
+WORD LIMIT: 600 words total (approximately 1/2 of A4 page at 12pt font)
+
+EVIDENCE STANDARD:
+- Cite sources from prior research notes or new findings
+- If unknown or not publicly disclosed, state: **"Not disclosed publicly - recommend direct engagement with $name"**
+- Do NOT speculate or use industry averages as proxy
+
+QUALITY CHECKLIST:
+- [ ] All objectives are specific and measurable (not vague like "improve efficiency")
+- [ ] Each objective links to IT enablement
+- [ ] Funding and decision authority identified where possible
+- [ ] Challenges are from customer perspective, not Red Hat's sales perspective

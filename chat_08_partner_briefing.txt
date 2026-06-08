@@ -1,0 +1,280 @@
+# METADATA
+# ID: partner_briefing
+# TYPE: chat
+# DEPENDENCIES: business_objectives, tech_partners, solution_ideas
+# TIMEOUT: 300
+# VALIDATION: min_words=600, max_words=900
+# QUALITY_THRESHOLD: 7.0
+
+PRIOR CONTEXT - Reference these notes:
+- "Foundation Research"
+- "Business Objectives"
+- "Technology Partners"
+- "Solution Ideas"
+
+Create a partner briefing document for a services integrator Red Hat is introducing to $name to accelerate their Ansible automation initiatives.
+
+---
+
+## DOCUMENT METADATA
+
+**Partner Name:** [TO BE CUSTOMIZED - insert partner name]
+
+**Engagement Scope:** Ansible Automation Platform implementation and enablement
+
+**Document Classification:** PARTNER CONFIDENTIAL - Limited Distribution
+- Share with partner's delivery team assigned to $name
+- DO NOT share full Red Hat account plan or competitive intelligence
+
+---
+
+## SECTION 1: Why $name Cares About Automation
+
+### **Business Drivers**
+
+$name has identified automation as critical to achieving these objectives:
+- [List 1-2 relevant business objectives from "Business Objectives" note]
+- Quantify the impact: [Cost reduction target, efficiency goal, time savings]
+
+**Current Pain Points:**
+- Manual processes consuming [X hours/month] of IT staff time
+- Deployment cycles taking [Y days/weeks] vs. industry benchmark of [Z days]
+- Configuration drift and compliance issues requiring manual remediation
+- Scaling challenges: infrastructure team cannot keep pace with business growth
+
+**Why Now:**
+- [Business trigger: new initiative launch, M&A integration, cloud migration, compliance deadline]
+- Executive sponsorship: [CIO / VP Infrastructure] has mandated automation as strategic priority
+- Budget allocation: $[amount] approved for automation platform and services (if known)
+
+---
+
+### **Industry Context: Automation in $industry**
+
+**Industry Maturity:**
+- $industry is [Leading / Moderate / Lagging] in infrastructure automation adoption
+- Key drivers in this industry: [Regulatory compliance, cost pressure, digital transformation, competitive differentiation]
+
+**Common Automation Use Cases in $industry:**
+1. [Use case #1: e.g., "Automated compliance reporting for SOX/FDA"]
+2. [Use case #2: e.g., "Multi-cloud provisioning and orchestration"]
+3. [Use case #3: e.g., "Application deployment and configuration management"]
+
+**Challenges Specific to $industry:**
+- [e.g., "Stringent change control processes require audit trails"]
+- [e.g., "Legacy mainframe integration complexity"]
+- [e.g., "Multi-vendor infrastructure requiring vendor-agnostic automation"]
+
+---
+
+## SECTION 2: $name's Automation Landscape
+
+### **Current State**
+
+**Existing Tools:**
+- Configuration Management: [Puppet / Chef / Manual / None]
+- Cloud Provisioning: [Terraform / CloudFormation / Manual]
+- Application Deployment: [Jenkins / GitLab / Manual scripting]
+- Monitoring & Incident Response: [ServiceNow / PagerDuty / Manual]
+
+**Manual Processes Identified for Automation:**
+[List top 3-5 manual workflows suitable for Ansible automation]
+1. [Process #1: e.g., "RHEL server provisioning and configuration - currently 6 hours/server"]
+2. [Process #2: e.g., "Security patching across 1,200 servers - 40 hours/month"]
+3. [Process #3: e.g., "Application deployments - 2-week release cycle"]
+
+**Toolchain Fragmentation:**
+- [Describe if $name has multiple disparate automation tools creating complexity]
+- Opportunity: Ansible as unifying automation platform across infrastructure and applications
+
+---
+
+### **Target State (12 Months)**
+
+$name's vision for automation:
+- [Describe desired end state based on business objectives]
+- Example: "80% of infrastructure changes automated with zero-touch deployment"
+- Example: "Reduce MTTR from 4 hours to 30 minutes via automated remediation"
+
+**Success Metrics:**
+- [Metric #1: e.g., "Deployment frequency: from monthly to weekly"]
+- [Metric #2: e.g., "Manual effort reduction: 200 hours/month automated"]
+- [Metric #3: e.g., "Compliance: 100% configuration management coverage"]
+
+---
+
+### **Technical Environment**
+
+**Infrastructure Scope:**
+- Server count: [X] Linux servers ([RHEL Y%], [Ubuntu Z%], etc.)
+- Cloud platforms: [AWS / Azure / GCP / On-premises / Hybrid]
+- Geographic distribution: [Data centers in X locations]
+- Network architecture: [Flat / Segmented / Air-gapped environments / DMZ]
+
+**Application Stack:**
+- Middleware: [JBoss / Tomcat / WebSphere / nginx]
+- Databases: [Oracle / PostgreSQL / MongoDB]
+- Monitoring: [Dynatrace / Datadog / Splunk]
+- Ticketing: [ServiceNow / Jira]
+
+**Integration Requirements:**
+- Ansible must integrate with: [List critical systems - ServiceNow, Satellite, Jenkins, cloud APIs]
+- Authentication: [Active Directory / LDAP / SSO]
+- Security: [Network access, firewall rules, bastion hosts, certificate management]
+
+---
+
+## SECTION 3: Red Hat's Ansible Engagement with $name
+
+### **Products Deployed**
+
+**Ansible Automation Platform:**
+- Version: [e.g., "Ansible Automation Platform 2.4"]
+- Subscription Tier: [Standard / Premium]
+- Automation Units: [Number of managed nodes]
+- Deployment Model: [Self-managed on RHEL / Managed cloud service]
+
+**Components in Use:**
+- Automation Controller (formerly Ansible Tower): [URL if accessible]
+- Automation Hub: Private or connected to Red Hat Cloud?
+- Event-Driven Ansible: Deployed? (Yes/No)
+- Ansible Lightspeed (AI code generation): Pilot or not yet
+
+---
+
+### **Use Cases Currently Live**
+
+1. **[Use Case #1]:** [e.g., "RHEL patching automation"]
+   - Scope: [X servers automated]
+   - Business impact: [Y hours/month time savings]
+   - Maturity: [Pilot / Production / Scaling]
+
+2. **[Use Case #2]:** [e.g., "Network configuration management"]
+   - Scope: [Z network devices automated]
+   - Business impact: [Configuration drift eliminated]
+
+**Playbook Library:**
+- Number of custom playbooks developed: [X]
+- Reusable roles/collections created: [Y]
+- Content sourced from Red Hat Certified Collections: [List relevant collections]
+
+---
+
+### **Training & Enablement**
+
+**$name Team Certification Status:**
+- Red Hat Certified Specialist in Ansible Automation: [X team members]
+- Internal training completed: [Y engineers trained on Ansible basics]
+- Remaining skills gaps: [e.g., "Advanced playbook development, AAP administration"]
+
+**Documentation:**
+- Internal runbooks: [Available / In progress / Not started]
+- Red Hat Professional Services engagement: [Previous or ongoing?]
+
+---
+
+## SECTION 4: Partner Engagement Scope
+
+### **Specific Ask**
+
+**Objective:**
+[Clearly define what the partner is being asked to deliver]
+
+Example:
+"Implement Ansible playbooks to automate CI/CD pipeline deployments across 300 RHEL instances, integrated with Jenkins and ServiceNow for change management."
+
+**Deliverables:**
+1. [Deliverable #1: e.g., "30 production-ready Ansible playbooks for app deployment automation"]
+2. [Deliverable #2: e.g., "Integration with Jenkins for automated testing and deployment"]
+3. [Deliverable #3: e.g., "ServiceNow integration for change request automation"]
+4. [Deliverable #4: e.g., "Knowledge transfer and documentation"]
+
+**Timeline:**
+- Kickoff: [Start date]
+- Pilot completion: [Milestone date - typically 60-90 days]
+- Production rollout: [Target completion date]
+
+---
+
+### **Success Metrics**
+
+How Red Hat and $name will measure partner effectiveness:
+
+**Technical Metrics:**
+- [Metric #1: e.g., "95% playbook success rate in production"]
+- [Metric #2: e.g., "Zero security vulnerabilities in delivered playbooks"]
+- [Metric #3: e.g., "Playbook execution time <5 minutes for 100-server deployment"]
+
+**Business Metrics:**
+- [Metric #1: e.g., "Reduce deployment cycle time from 2 weeks to 2 days"]
+- [Metric #2: e.g., "Eliminate 150 manual hours/month"]
+
+**Adoption Metrics:**
+- [Metric #1: e.g., "$name team can independently create new playbooks after knowledge transfer"]
+- [Metric #2: e.g., "80% of deployments use automated Ansible workflows within 6 months"]
+
+---
+
+### **Governance & Communication**
+
+**Weekly Syncs:**
+- Attendees: $name IT lead, Red Hat account team, Partner delivery lead
+- Agenda: Progress updates, blockers, upcoming milestones
+
+**Escalation Path:**
+- Technical issues: [Red Hat TAM or Partner technical lead]
+- Commercial/scope issues: [Red Hat Account Executive]
+
+**Change Management:**
+- All scope changes require written approval from $name and Red Hat
+- Partner must coordinate with Red Hat before upselling additional services
+
+---
+
+## SECTION 5: Partner Success Enablement
+
+### **Red Hat Support for Partner**
+
+**Resources Available:**
+- Red Hat Partner Seller Support: [Contact information]
+- Technical Enablement: [Access to Red Hat labs, sandbox environments]
+- Content Library: [Red Hat Certified Collections, reference architectures]
+
+**Co-Delivery Model:**
+- Red Hat will provide: [Architecture review, SME consulting for complex integrations]
+- Partner will provide: [Hands-on implementation, knowledge transfer]
+
+---
+
+### **Rules of Engagement**
+
+**Partner Responsibilities:**
+- Deliver on scope, timeline, and quality metrics
+- Maintain Red Hat partner certification standards
+- Coordinate all $name communications through Red Hat account team
+- Preserve customer relationship: Red Hat owns the account, partner is service extension
+
+**DO NOT:**
+- Overshare Red Hat's broader account strategy or opportunity pipeline with $name
+- Introduce competing products or services outside Ansible scope
+- Bypass Red Hat account team for commercial discussions
+
+---
+
+## DELIVERABLE SPECIFICATIONS
+
+**Format:** Markdown with clear headers
+**Word Count:** 600-800 words
+**Tone:** Collaborative - partner is trusted extension of Red Hat team
+
+**Distribution:**
+- Partner delivery team (technical leads and project managers)
+- Red Hat account team (AE, SA, CSM)
+- $name project sponsor (with Red Hat approval)
+
+QUALITY CHECKLIST:
+- [ ] Scope is specific (not "help with automation")
+- [ ] Success metrics are quantified
+- [ ] Technical environment details provided
+- [ ] No oversharing of sensitive Red Hat account intelligence
+- [ ] Timeline and governance clearly defined

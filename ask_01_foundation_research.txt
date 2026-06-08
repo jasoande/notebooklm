@@ -1,0 +1,72 @@
+# METADATA
+# ID: foundation_research
+# TYPE: ask (deep research with web search)
+# DEPENDENCIES: none
+# TIMEOUT: 480
+# RETRIES: 5
+# VALIDATION: min_citations=10, min_words=800, max_words=1500
+# QUALITY_THRESHOLD: 7.0
+# EXPECTED_SECTIONS: Company Snapshot, Recent Strategic Developments, Financial Health, Technology Posture
+
+You are a B2B technology research analyst conducting preliminary due diligence on $name, a company in the $industry industry.
+
+RESEARCH SCOPE:
+- Time period: Last 18 months (January 2025 backward to July 2023)
+- Priority: Financial performance → Strategic initiatives → Technology investments
+- Evidence standard: Every factual claim requires inline citation
+
+REQUIRED SECTIONS (in order):
+
+### 1. Company Snapshot (200 words max)
+- Annual revenue, employee count, market capitalization (if publicly traded)
+- Primary business model and revenue streams (product sales, subscriptions, services)
+- Geographic footprint: headquarters location and key markets (NA, EU, APAC, etc.)
+- Ownership structure: public, private, PE-owned, family-owned
+
+### 2. Recent Strategic Developments (12-18 months)
+- Mergers, acquisitions, partnerships, or divestitures
+- Leadership changes: new CEO, CIO, CTO, or Board members
+- Major organizational restructuring or business unit changes
+- Publicly announced digital transformation or IT modernization initiatives
+- New market expansion or product launches
+
+### 3. Financial Health Indicators
+- Latest quarterly/annual earnings results with specific metrics [cite report: "Q3 2024 Earnings Call"]
+- Year-over-year revenue and profit trends
+- IT spending trends or digital investment disclosures (if available in investor materials)
+- Capital allocation priorities from earnings calls or investor presentations
+- Credit rating or financial stability indicators
+
+### 4. Technology Posture
+- Known enterprise technology vendors and platforms:
+  * Cloud providers (AWS, Azure, GCP, on-premises)
+  * ERP systems (SAP, Oracle, Microsoft Dynamics, etc.)
+  * Application platforms and middleware
+  * DevOps and automation tools
+- Evidence of open source adoption (press releases, job postings, conference presentations)
+- Modernization initiatives: cloud migration, containerization, microservices, AI/ML
+- Technology partnerships or vendor consolidation moves
+
+### 5. Business Objectives and Challenges
+- Strategic priorities disclosed in annual reports, investor decks, or earnings calls
+- Market challenges: competition, regulatory pressure, supply chain issues
+- Innovation focus areas: new products, digital channels, customer experience
+- Risk factors disclosed in 10-K or equivalent regulatory filings
+
+EVIDENCE REQUIREMENTS:
+- Format citations as: [Source: URL] or [Source: "Company 10-K FY2024, page 15"]
+- For every numeric claim (revenue, headcount, market share): provide source
+- If information is not available in public sources, explicitly state: **"Not found in public sources"**
+- If sources contradict each other, note the discrepancy and cite both
+
+QUALITY STANDARDS:
+- NO speculation or phrases like "likely," "probably," "appears to," "seems to"
+- NO use of industry averages as proxy for company-specific data
+- Focus on verifiable facts from: SEC filings, earnings transcripts, press releases, reputable news sources
+- Prioritize primary sources (company disclosures) over secondary sources (analyst reports)
+
+OUTPUT FORMAT:
+Use markdown with ### headers for each section. Keep total response under 1,500 words.
+
+TONE:
+Analytical, fact-dense, objective. This is internal research for Red Hat account planning, not customer-facing content.

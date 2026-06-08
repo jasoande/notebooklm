@@ -1,0 +1,43 @@
+# Project APE - Account Planning Engine
+# Python Dependencies
+#
+# CRITICAL FIX #2: Exact version pinning to prevent breaking changes
+# Last Updated: 2026-06-07
+# Python Version: 3.9+
+
+# URL validation and HTTP requests
+requests==2.34.2
+requests-oauthlib==2.0.0
+
+# Google API Client (for future Google Drive integrations)
+google-api-python-client==2.197.0
+google-api-core==2.31.0
+google-auth==2.53.0
+google-auth-oauthlib==1.4.0
+google-auth-httplib2==0.4.0
+
+# Development Dependencies (optional)
+# Uncomment for development work:
+# pytest==7.4.0              # Testing framework
+# pytest-cov==4.1.0          # Code coverage
+# flake8==6.0.0              # Linting
+# black==23.7.0              # Code formatting
+# mypy==1.4.1                # Type checking
+
+# Standard library enhancements (included in Python 3.9+ but listed for clarity)
+# pathlib - file path operations (built-in)
+# threading - concurrent execution (built-in)
+# subprocess - CLI tool execution (built-in)
+# logging - structured logging (built-in)
+# csv - CSV file parsing (built-in)
+# re - regex operations (built-in)
+# json - JSON parsing (built-in)
+# queue - thread-safe queues (built-in)
+
+# External Dependencies (must be installed separately)
+# Node.js 16+ - Required for NotebookLM CLI
+# NotebookLM CLI - Installation: npm install -g @googleworkspace/notebooklm-cli
+#                 Or follow: https://github.com/notebooklm/cli
+
+# To regenerate this file with current versions:
+# pip freeze > requirements.txt
